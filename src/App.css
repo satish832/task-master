@@ -1,0 +1,135 @@
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-user-top {
+    margin-right: 20px;
+    margin-top: 8px;
+    display: inline-block;
+}
+.sign-out-btn {
+    width: 190px;
+    float: right;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+	position: relative;
+    margin-bottom: 0;
+    background-color: rgba(0,0,0,.03);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+.card {
+    border: none!important;
+}
+
+.login-btn {
+  width: 100%;
+  opacity: 0.9;
+}
+
+.login-btn:hover {
+  opacity: 1;
+}
+
+.status-list {
+    padding: 10px;
+    width: 50%;
+    margin: auto;
+	display: table;
+}
+
+.status-list-workflow h4, .status-list h4, .task-list-workflow h4 {
+    text-align: center;
+}
+.main-login form{
+	padding: 20px 80px;
+}
+.tasks-table-div {
+    max-height: 430px;
+    overflow: scroll;
+    clear: both;
+    margin-top: 15px;
+}
+.task-list-label {
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.field-div {
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    width: 470px;
+    margin-bottom: 5px;
+    position: relative;
+}
+.showcase {
+    position: relative;
+    top: 1px;
+	cursor: pointer;
+    display: inline-block;
+    width: 18px;
+    height: 11px;
+    opacity: .25;
+    margin-right: 20px;
+    cursor: row-resize;
+    background: -webkit-linear-gradient(top,#000,#000 20%,#fff 0,#fff 40%,#000 0,#000 60%,#fff 0,#fff 80%,#000 0,#000);
+    background: linear-gradient(
+180deg,#000,#000 20%,#fff 0,#fff 40%,#000 0,#000 60%,#fff 0,#fff 80%,#000 0,#000);
+}
+
+.task-input {
+    width: 60%;
+    display: inline-block;
+}
+.edit-btns-status {
+    display: inline;
+    margin-right: 5px;
+    float: right;
+    margin-top: -5px;
+}
+#taskCt {
+    width: 85%;
+    float: left;
+}
+.status-list button {
+    height: 35px;
+}
+.code-dialog {
+    padding: 0!important;
+    margin-right: 4px;
+}

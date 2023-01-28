@@ -1,0 +1,631 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+select.form-control:not([size]):not([multiple]) {
+    height: calc(2.25rem + 2px);
+}
+
+.login-img {
+	min-height: 720px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+}
+
+.main-log-img{text-align: center;margin-bottom: 45px;}
+.main-login{background-color: #f3fcfc;}
+.main-login h3{text-align: center;}
+.user-top-outer {text-align: right;margin-bottom: 5px;}
+.instance-version {position: absolute;bottom: 0px;font-size: 14px;}
+.fab-export-btn {
+    margin-right: 25px;
+    margin-top: 10px;
+}
+.fab-export-btn button {
+    padding: 6px 40px;
+    font-size: 18px;
+    height: inherit!important;
+}
+.float-right {
+    float: right!important;
+}
+
+.input-group-append {
+    margin-left: -1px;
+}
+.input-group-append, .input-group-prepend {
+    display: flex;
+}
+.build-details, .form-control {
+    font-size: 14px!important;
+}
+.append-btn{border-top-left-radius: 0px!important;border-bottom-left-radius: 0px!important;}
+.upload-box button {
+    border-radius: 4px!important;
+}
+/* .top-header{position: fixed !important; width: 100%;}
+.main-content{margin-top: 60px;} */
+.login-img{background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex: 3 1;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+}
+.fadeInRight.is-closed, .fadeInLeft.is-open{
+	background: url('http://localhost:3000/layout_arrows.png') no-repeat 0 0 !important;
+}
+
+.fadeInRight.is-open, .fadeInLeft.is-closed{
+	background: url('http://localhost:3000/layout_arrows.png') no-repeat 0 -16px !important;
+}
+.sign-up{text-align: center;}
+.sign-up span{color: blue;cursor: pointer;}
+.error{border-color: red!important;}
+.status-list-workflow {
+    padding: 10px;
+    width: 75%;
+    margin: auto;
+}
+#taskCtWork {
+    width: 70%;
+    float: right;
+    margin-right: 45px;
+}
+.cat-lable {
+    vertical-align: -webkit-baseline-middle;
+    margin-bottom: inherit!important;
+}
+.builder-filter {
+    width: 50%!important;
+}
+.task-list-label {
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 20px;
+}
+.tasks-table-div {
+    max-height: 430px;
+    overflow: scroll;
+    clear: both;
+    margin-top: 15px;
+}
+.task-div {
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    width: 520px;
+    margin-bottom: 5px;
+    position: relative;
+}
+.tasks-table-div input {
+    vertical-align: middle;
+    margin-right: 15px;
+}
+.task-input-2 {
+    width: 70%;
+    display: inline-block;
+}
+.workflow-div {
+    border: 2px solid #ccc;
+    padding: 15px;
+    margin-top: 5px;
+    height: 382px;
+}
+.workflow-select-list {
+    max-height: 350px;
+    overflow-y: scroll;
+}
+.status-inner {
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.status-inner .field-div {
+    margin: 2px auto;
+    width: 100%;
+}
+.light-yellow{background-color: #f5f5c5;}
+.light-green{background-color: #a4f8a4;}
+.light-blue{background-color: #a1e8f9;}
+.delete-checkbox {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.workflow-save {
+    margin-top: 15px;
+    display: flex;
+    width: auto;
+    float: left;
+}
+.save-lable {
+    margin-top: 4px;
+    margin-right: 5px;
+}
+#workflowName {
+    height: 38px;
+    width: 230px;
+    margin-right: 5px;
+}
+.import-btn {
+    margin-top: 14px;
+    border: none;
+    font-size: 24px;
+    float: right;
+}
+.sharing-code-btn {
+    border: none;
+    font-size: 22px;
+    padding: 0;
+}
+.workflow-manager {
+    width: 80%;
+    margin: 0 auto;
+}
+.wfilters {
+    width: 60%;
+    margin: 0 auto 20px;
+    position: relative;
+}
+.wc-filter {
+    margin-bottom: 5px;
+}
+.cat-manage {
+    position: absolute;
+    right: 0;
+    top: 20px;
+}
+.workflow-list h4 {
+    text-align: center;
+    margin-top: 10px;
+}
+.wfilters label {
+    width: 80px;
+}
+.wfilters select {
+    display: inline;
+    margin-right: 15px;
+}
+.w-name {
+    text-align: left!important;
+}
+.builder-filter {
+    width: 50%!important;
+}
+.cat-manage {
+    position: absolute;
+    right: 0;
+    top: 20px;
+}
+.cat-manage button {
+    padding: 5px 8px;
+    font-size: 14px;
+}
+.workflow-list-table.table td, .workflow-list-table.table th {
+    padding: 3px 10px!important;
+}
+.workflow-list-table {
+    padding: 0 10px!important;
+    height: 20px;
+    font-size: 14px;
+	text-align: center;
+}
+
+.workflow-list-table button {
+    padding: 0 10px!important;
+    height: 20px;
+    font-size: 14px;
+}
+.task-list-workflow, .wdata-scheduled {
+    padding: 10px;
+    width: 65%;
+    margin: auto 155px;
+}
+.select-workflow-div {
+    display: flex;
+}
+.workflow-tasks-div {
+    max-height: 430px;
+    overflow-y: scroll;
+    clear: both;
+    margin-top: 15px;
+    font-size: 14px;
+}
+.wname-day-count {
+    text-align: center;
+    margin-top: 10px;
+}
+.workflow-tasks-div .task-div {
+    border: 1px solid #ccc;
+    padding: 3px 10px;
+    width: 100%;
+    margin-bottom: 5px;
+    position: relative;
+}
+.task-input-5 {
+    width: 26%;
+    display: inline-block;
+    overflow: hidden;
+    height: 22px;
+}
+.workflow-tasks-div .input-role {
+    font-size: 12px;
+    width: 14%;
+    display: inline-block;
+}
+.workflow-tasks-div .input-person {
+    font-size: 14px;
+    width: 12%;
+    display: inline-block;
+}
+.input-days {
+    display: inline-block;
+    width: 60px;
+}
+.task-icon {
+    margin-left: 3px;
+}
+.task-edit {
+    float: right;
+    margin-top: 5px;
+}
+
+.code-dialog {
+    padding: 0!important;
+    margin-right: 4px;
+}
+.workflow-tasks-div .input-person, .workflow-tasks-div .input-role, .workflow-tasks-div .input-status {
+    border: 1px solid #ccc;
+    margin: 0 2px;
+    padding: 0 5px;
+    background-color: #fff;
+}
+.hamburger {
+    background: transparent;
+    border: none;
+    margin-left: 2px;
+    position: fixed;
+    top: 68px;
+    z-index: 999;
+}
+
+.fadeInRight {
+    right: 20px;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+}
+.fadeInLeft, .fadeInRight {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+
+#wrapper2.toggled-3 #sidebar-wrapper-right {
+    width: 440px;
+}
+#sidebar-wrapper-right {
+    background: #f0f0f0;
+    height: 100%;
+    right: 220px;
+    margin-right: -220px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+    width: 0;
+    z-index: 1000;
+    border: 2px solid #ccc;
+}
+.nav-content-right {
+    padding: 10px 30px;
+    width: 430px;
+}
+.page-title, .panel-btn {
+    text-align: center;
+}
+.workflow-item-fields {
+    margin: 10px 0 120px;
+}
+.custom-navbar-2, .custom-navbar-4 {
+    position: fixed;
+    right: 0;
+    z-index: 1030;
+    top: 66px;
+    border-width: 0 0 1px;
+}
+.btn-update-status {
+    float: left;
+    margin-top: 10px;
+}
+.row-input label {
+    margin-bottom: 0!important;
+}
+.do-not-share input {
+    display: inline-block;
+    width: auto;
+    vertical-align: bottom;
+    margin-left: 120px;
+}
+.column-input input, .row-input input {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+#wrapper2.toggled-3 .fadeInRight {
+    right: 454px;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+}
+.workflow-option {
+    font-size: 12px;
+}
+.input-option {
+    width: 92px;
+    display: inline-block;
+}
+.nav-content-right {
+    padding: 10px 30px;
+    width: 430px;
+}
+.workflow-item-fields {
+    margin: 10px 0 120px;
+}
+.text-box, .workflow-checkbox {
+    margin-top: 10px;
+}
+.text-center {
+    text-align: center!important;
+}
+.workflow-first-task {
+    width: 90%;
+    margin: 0 auto;
+    font-size: 13px;
+    padding: 10px;
+}
+.show-all-note {
+    float: right;
+    margin-right: 10px;
+}
+.workflow-filters {
+    margin-bottom: 15px;
+}
+.add-wip-note2, .workflow-filters {
+    display: inline-flex;
+}
+.wp-filter {
+    width: 120px;
+    margin-right: 5px;
+}
+.startenddate {
+    width: 128px;
+    margin-right: 5px;
+}
+.wp-filter-reset button {
+    margin-top: 25px;
+}
+.wdata-table-div h4 {
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+}
+.show-all-note {
+    float: right;
+    margin-right: 10px;
+}
+.wp-filter select {
+    font-size: 12px!important;
+    padding: 5px;
+}
+.startenddate input {
+    width: 125px;
+}
+.startenddate label {
+    margin: 0;
+}
+.tracker-table.table td, .tracker-table.table th {
+    padding: 3px 10px!important;
+}
+.note-row {
+    display: none;
+    background-color: #ffeac4;
+}
+
+.show-all-note .showAllSwitch {
+    margin-right: 5px;
+}
+.showAllSwitch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+.show-all-note {
+    float: right;
+    margin-right: 10px;
+}
+#showAllNotes, #showAtRiskStatus {
+    visibility: hidden;
+}
+
+.instance-manager #showOutputText, .showAllSwitch input {
+    visibility: hidden;
+}
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.showAllSlide:before {
+    position: absolute;
+    content: "";
+    left: 2px;
+    background-color: #fff;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.embedslider:before, .showAllSlide:before {
+    height: 19px;
+    width: 23px;
+    bottom: 2px;
+}
+
+input:checked+.slider {
+    background-color: #2196f3;
+}
+
+input:checked+.showAllSlide:before {
+    -webkit-transform: translateX(11px);
+    transform: translateX(11px);
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+.showAllSlide:before {
+    position: absolute;
+    content: "";
+    left: 2px;
+    background-color: #fff;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.row-red{background-color: #f3baba;}
+.row-green{background-color: #a3f5a3;}
+.row-green span{float: right;font-weight: 700;color: red;}
+.row-yellow{background-color: #f7f7b2;}
+.task-note, .task-wip-note {
+    cursor: pointer;
+}
+
+.task-icon {
+    margin-left: 3px;
+}
+
+.modal-dialog {
+    max-width: 590px!important;
+}
+
+.input-wip-note {
+    width: 312px!important;
+    height: 40px!important;
+}
+
+.build-details, .form-control {
+    font-size: 14px!important;
+}
+.btn-wip-note {
+    margin-left: 2px;
+}
+
+.add-wip-note2, .workflow-filters {
+    display: inline-flex;
+}
+.wip-Note-box {
+    padding: 10px;
+    background-color: #fff;
+    max-height: 155px;
+    overflow-y: scroll;
+}
+.job-header-section {
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #f2f2f2;
+}
+.back-to-view {
+    float: right;
+    text-decoration: underline;
+    color: #0545cf;
+}
+
+.back-to-view, .view-workflow-details {
+    cursor: pointer;
+}
+.job-header-section span {
+    margin-right: 20px;
+}
+
+#wrapper3.toggled-3 #sidebar-wrapper-right {
+    width: 400px;
+}
+#wrapper3.toggled-3 .fadeInRight {
+    right: 405px;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+}
+.super-view {
+    margin-top: 30px;
+    margin-left: 10px;
+}
+.super-view img {
+    cursor: pointer;
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+.workflow-super-view {
+    width: 65%;
+    margin: 0 auto;
+    font-size: 13px;
+    padding: 10px;
+}
+.workflow-super-table.table td, .workflow-super-table.table th {
+    padding: 3px 10px;
+}
+.task-header-th {
+    width: 42px;
+    max-height: 155px;
+    padding: 5px 10px!important;
+}
+.task-header-span {
+    -webkit-text-orientation: mixed;
+    text-orientation: mixed;
+    -webkit-writing-mode: vertical-lr;
+    -ms-writing-mode: tb-lr;
+    writing-mode: vertical-lr;
+    font-size: 12px;
+}
+.back-to-view, .view-workflow-details {
+    cursor: pointer;
+}
+.new-super-view {
+    width: 60px;
+    text-align: center;
+}
+.scheduled-input .row-input input, .scheduled-input .row-input select {
+    width: 340px!important;
+    padding: 8px;
+}
+
+.scheduled-input .row-input {
+    max-width: 340px;
+}
