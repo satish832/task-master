@@ -24,7 +24,7 @@ class MainHeader extends Component {
             <div className="row">
 				<div className="col-md-6">
                     <h4>Task Master</h4>
-					<div className="instance-version">{'V1.25012023.a'}</div>
+					<div className="instance-version">{'V1.28012023.a'}</div>
                 </div>
 				<div className="col-md-2">
 					<select id="select-view-option" className="form-control company-select" onChange={builderOption} >
@@ -34,6 +34,10 @@ class MainHeader extends Component {
 						<option value="workFlowDetails">Workflow Details</option>
 						<option value="workFlowProgress">Workflows in Progress</option>
 						<option value="scheduledworkFlow">Scheduled Workflows</option>
+						
+						{localStorage.getItem('role') == 'admin' ?
+						<option value="userManager">User Manager</option>
+						:null}
 					</select>
 				</div>
 				<div className="col-md-4 user-top-outer">

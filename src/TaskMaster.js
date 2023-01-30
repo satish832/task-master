@@ -7,6 +7,7 @@ import WorkFlowBuilder from "./component/WorkFlowBuilder";
 import WorkFlowDetails from "./component/WorkFlowDetails";
 import WorkFlowProgress from "./component/WorkFlowProgress";
 import ScheduledworkFlow from "./component/ScheduledworkFlow";
+import UserManager from "./component/UserManager";
 
 class TaskMaster extends Component {
 	
@@ -19,28 +20,32 @@ class TaskMaster extends Component {
 			workFlowDetails:false,
 			workFlowProgress:false,
 			scheduledworkFlow:false,
+			userManager:false,
 	 	}
     }
    	
 	builderOption = (event) => {
 		let val = event.target.value;
+		this.setState({workFlow:false,taskManager:false,workFlowManager:false,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:false,userManager:false});
 		if(val == 'workFlow'){
-			this.setState({workFlow:true,taskManager:false,workFlowManager:false,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:false});
+			this.setState({workFlow:true});
 		}else if(val == 'taskManager'){
-			this.setState({workFlow:false,taskManager:true,workFlowManager:false,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:false});
+			this.setState({taskManager:true});
 		}else if(val == 'workFlowManger'){
-			this.setState({workFlow:false,taskManager:false,workFlowManager:true,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:false});
+			this.setState({workFlowManager:true});
 		}else if(val == 'workFlowDetails'){
-			this.setState({workFlow:false,taskManager:false,workFlowManager:false,workFlowDetails:true,workFlowProgress:false,scheduledworkFlow:false});
+			this.setState({workFlowDetails:true});
 		}else if(val == 'workFlowProgress'){
-			this.setState({workFlow:false,taskManager:false,workFlowManager:false,workFlowDetails:false,workFlowProgress:true,scheduledworkFlow:false});
+			this.setState({workFlowProgress:true});
 		}else if(val == 'scheduledworkFlow'){
-			this.setState({workFlow:false,taskManager:false,workFlowManager:false,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:true});
+			this.setState({scheduledworkFlow:true});
+		}else if(val == 'userManager'){
+			this.setState({userManager:true});
 		}
     }
 	
     render(){
-        const {taskManager,workFlow,workFlowManager,workFlowDetails,workFlowProgress,scheduledworkFlow} = this.state;
+        const {taskManager,workFlow,workFlowManager,workFlowDetails,workFlowProgress,scheduledworkFlow,userManager} = this.state;
     	return (
 			<div className="full-container">
 				<div className="card">
@@ -69,6 +74,11 @@ class TaskMaster extends Component {
 					{scheduledworkFlow ? 
 						<ScheduledworkFlow />
 					:null}
+					
+					{userManager ? 
+						<UserManager />
+					:null}
+					
 				</div>           
 			</div>           
 		)

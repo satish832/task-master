@@ -380,6 +380,7 @@ export default class TaskManager extends Component {
 	render() {
 		
 		const {catList,taskList,taskCsvName,fabCsvName} = this.state;
+		
 		let catOption = catList.map(function(val,i) {
 			return (
 				<option value={val['name']} key={i}>{val['name']}</option>

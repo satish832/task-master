@@ -56,7 +56,7 @@ export default class WorkFlowProgress extends Component {
 	
 	getTaskMasterUsers=() => {
 		
-		let user = localStorage.getItem('username').replaceAll('"', '');
+		let user = localStorage.getItem('username');
 		
 		let ApiUrl = $('#ApiUrl').val();
 		let url = ApiUrl+'authors-responsible';

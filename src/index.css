@@ -629,3 +629,19 @@ input:checked+.showAllSlide:before {
 .scheduled-input .row-input {
     max-width: 340px;
 }
+
+.user-list .table th, .user-list .table td {
+    padding: 3px 10px!important;
+}
+
+
+.user-list .table{text-align: center;}
+.user-list h4 {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.user-list{
+	width: 80%;
+    margin: 0 auto;
+}

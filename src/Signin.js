@@ -29,7 +29,8 @@ export default function Signin() {
 		});
 		if ('accessToken' in response) {
 			localStorage.setItem('accessToken', response['accessToken']);
-			localStorage.setItem('username', JSON.stringify(response['user']['username']));
+			localStorage.setItem('username', response['user']['username']);
+			localStorage.setItem('role', response['user']['role']);
 			window.location.href = "/";
 		} else {
 		  alert("Failed", response.message, "error");
