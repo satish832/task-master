@@ -14,11 +14,11 @@ class TaskMaster extends Component {
 	constructor(props) {
         super(props);
 	 	this.state ={
-			taskManager:true,
+			taskManager:localStorage.getItem('role') == 'Subscriber' ? false : true,
 			workFlow:false,
 			workFlowManager:false,
 			workFlowDetails:false,
-			workFlowProgress:false,
+			workFlowProgress:localStorage.getItem('role') == 'Subscriber' ? true : false,
 			scheduledworkFlow:false,
 			userManager:false,
 	 	}

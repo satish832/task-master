@@ -27,6 +27,7 @@ class MainHeader extends Component {
 					<div className="instance-version">{'V1.28012023.a'}</div>
                 </div>
 				<div className="col-md-2">
+					{localStorage.getItem('role') == 'SuperAdmin' || localStorage.getItem('role') == 'Admin' ?
 					<select id="select-view-option" className="form-control company-select" onChange={builderOption} >
 						<option value="taskManager">Task List Manager</option>
 						<option value="workFlowManger">Workflow Manager</option>
@@ -35,10 +36,18 @@ class MainHeader extends Component {
 						<option value="workFlowProgress">Workflows in Progress</option>
 						<option value="scheduledworkFlow">Scheduled Workflows</option>
 						
-						{localStorage.getItem('role') == 'admin' ?
+						{localStorage.getItem('role') == 'SuperAdmin' ?
 						<option value="userManager">User Manager</option>
 						:null}
 					</select>
+					:null}
+					
+					{localStorage.getItem('role') == 'Subscriber' ?
+					<select id="select-view-option" className="form-control company-select" onChange={builderOption} >
+						<option value="workFlowProgress">Workflows in Progress</option>
+					</select>
+					:null}
+					
 				</div>
 				<div className="col-md-4 user-top-outer">
 					<div className="login-user-top">{'Logged in as: '+localStorage.getItem('username')}</div>

@@ -18,7 +18,12 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => '/'], function () use ($router) {
-	//$router->get('users',  ['uses' => 'UserController@showAllUsers']);
+	$router->get('users',  ['uses' => 'UserController@showAllUsers']);
+	$router->post('add-user',  ['uses' => 'UserController@addUser']);
+	$router->post('user-approve/{id}',  ['uses' => 'UserController@userApproved']);
+	$router->post('update-user/{id}',  ['uses' => 'UserController@updateUser']);
+	$router->delete('delete-user/{id}',  ['uses' => 'UserController@deleteUser']);
+	$router->post('update-user-role/{id}',  ['uses' => 'UserController@updateUserRole']);
 	$router->post('login',  ['uses' => 'UserController@login']);
 	$router->post('signup',  ['uses' => 'UserController@signup']);
 	

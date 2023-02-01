@@ -645,3 +645,22 @@ input:checked+.showAllSlide:before {
 	width: 80%;
     margin: 0 auto;
 }
+
+.role-option {
+    font-size: 12px;
+	width: 165px;
+}
+.add-user{float: right;}
+.btn-add-user{
+	text-decoration: underline;
+    color: #3838ff!important;
+}
+
+.role-option-2 {
+    font-size: 12px;
+    width: 165px!important;
+    clear: both;
+    display: block;
+}
+
+.fa-trash{color: #f60404;cursor: pointer;}
