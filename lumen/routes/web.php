@@ -29,6 +29,7 @@ $router->group(['prefix' => '/'], function () use ($router) {
 	
 	$router->get('list-name',  ['uses' => 'TaskManagerController@getListName']);
 	$router->post('add-list',  ['uses' => 'TaskManagerController@addListName']);
+	$router->get('all-tasks',  ['uses' => 'TaskManagerController@getAllTasks']);
 	$router->get('tasks/{id}',  ['uses' => 'TaskManagerController@getTasks']);
 	$router->post('add-task',  ['uses' => 'TaskManagerController@addTask']);
 	$router->post('import-task',  ['uses' => 'TaskManagerController@importTask']);
@@ -52,7 +53,7 @@ $router->group(['prefix' => '/'], function () use ($router) {
 	$router->post('delete-workflow-task/{id}',  ['uses' => 'WorkflowController@deleteWorkflowTask']);
 	$router->get('workflows-v2',  ['uses' => 'WorkflowController@getWorkflowsV2']);
 	$router->post('update-scheduled-workflow',  ['uses' => 'WorkflowController@updateSchWorkflow']);
-	$router->get('gotolink',  ['uses' => 'WorkflowController@getGotolink']);
+	$router->get('gotolink',  ['uses' => 'WorkflowController@getAllGotolink']);
 	$router->get('details-workflow-tasks/{id}',  ['uses' => 'WorkflowController@getDetailsWorkflowTasks']);
 	$router->post('update-option',  ['uses' => 'WorkflowController@updateOption']);
 	$router->post('update-option-v2',  ['uses' => 'WorkflowController@updateOptionV2']);
@@ -62,5 +63,27 @@ $router->group(['prefix' => '/'], function () use ($router) {
 	$router->post('task-note',  ['uses' => 'WorkflowController@getTaskNote']);
 	$router->get('workflow-job-details/{id}',  ['uses' => 'WorkflowController@getJobDetails']);
 	$router->get('workflows-in-progress-v2/{id}',  ['uses' => 'WorkflowController@getWorkflowInProgressV2']);
+	
+	//swaggerhub API
+	$router->get('workflow-list',  ['uses' => 'WorkflowController@getWorkflowList']);
+	$router->post('workflow-users',  ['uses' => 'WorkflowController@getWorkflowUsers']);
+	$router->get('workflow-list/{id}',  ['uses' => 'WorkflowController@getWorkflowList']);
+	$router->post('workflow-list-v2',  ['uses' => 'WorkflowController@getWorkflowListV2']);
+	$router->post('workflow-list-v3',  ['uses' => 'WorkflowController@getWorkflowListV3']);
+	$router->get('workflows-progress',  ['uses' => 'WorkflowController@getWorkflowProgress']);
+	$router->get('get-scheduled-workflow',  ['uses' => 'WorkflowController@getScheduledWorkflow']);
+	$router->post('workflows-progress-v2',  ['uses' => 'WorkflowController@getWorkflowProgressV2']);
+	$router->post('workflows-progress-tasks',  ['uses' => 'WorkflowController@getWorkflowProgressTasks']);
+	$router->post('workflow-initiate',  ['uses' => 'WorkflowController@workflowInitiate']);
+	$router->post('scheduled-workflow-initiate',  ['uses' => 'WorkflowController@scheduledWorkflowInitiate']);
+	$router->post('change-task-status',  ['uses' => 'WorkflowController@changeTaskStatus']);
+	$router->post('get-task-status',  ['uses' => 'WorkflowController@getTaskStatus']);
+	$router->post('get-active-tasks',  ['uses' => 'WorkflowController@getActiveTasks']);
+	$router->post('create-users',  ['uses' => 'WorkflowController@createUsers']);
+	$router->post('get-users',  ['uses' => 'WorkflowController@getUsers']);
+	$router->post('create-goto-link',  ['uses' => 'WorkflowController@createGotoLink']);
+	$router->post('get-goto-link',  ['uses' => 'WorkflowController@getGotoLink']);
+	$router->post('delete-goto-link',  ['uses' => 'WorkflowController@deleteGotoLink']);
+	$router->post('remove-scheduled-workflow',  ['uses' => 'WorkflowController@removeScheduledWorkflow']);
 
 });

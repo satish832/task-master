@@ -17,7 +17,12 @@ class TaskManagerController extends Controller
         $list = ListName::create($request->all());
 
         return response()->json($list, 201);
-    } 	
+    }
+
+	public function getAllTasks()
+    {
+        return response()->json(Task::get());
+    }
 	
 	public function getTasks($id)
     {
@@ -44,9 +49,9 @@ class TaskManagerController extends Controller
 	public function importTask(Request $request)
     {
         $tasks = $request->all();
-        echo '<pre>'; print_r($tasks['data']);
+        //echo '<pre>'; print_r($tasks['data']);
 		$array = json_decode($tasks['data']);
-        echo '<pre>'; print_r($array);
+        //echo '<pre>'; print_r($array);
 		
 		//$task = Task::create($request->all());
 
