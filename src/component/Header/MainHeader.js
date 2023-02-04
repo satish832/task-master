@@ -24,7 +24,7 @@ class MainHeader extends Component {
             <div className="row">
 				<div className="col-md-6">
                     <h4>Task Master</h4>
-					<div className="instance-version">{'V1.28012023.a'}</div>
+					<div className="instance-version">{'V1.01042023.a'}</div>
                 </div>
 				<div className="col-md-2">
 					{localStorage.getItem('role') == 'SuperAdmin' || localStorage.getItem('role') == 'Admin' ?
