@@ -25,6 +25,7 @@ $router->group(['prefix' => '/'], function () use ($router) {
 	$router->delete('delete-user/{id}',  ['uses' => 'UserController@deleteUser']);
 	$router->post('update-user-role/{id}',  ['uses' => 'UserController@updateUserRole']);
 	$router->post('login',  ['uses' => 'UserController@login']);
+	$router->post('api-login',  ['uses' => 'UserController@apiLogin']);
 	$router->post('signup',  ['uses' => 'UserController@signup']);
 	
 	$router->get('list-name',  ['uses' => 'TaskManagerController@getListName']);
@@ -65,9 +66,12 @@ $router->group(['prefix' => '/'], function () use ($router) {
 	$router->get('workflows-in-progress-v2/{id}',  ['uses' => 'WorkflowController@getWorkflowInProgressV2']);
 	
 	//swaggerhub API
+	$router->get('get-task/{id}',  ['uses' => 'TaskManagerController@getTaskById']);
+	
 	$router->get('workflow-list',  ['uses' => 'WorkflowController@getWorkflowList']);
 	$router->post('workflow-users',  ['uses' => 'WorkflowController@getWorkflowUsers']);
 	$router->get('workflow-list/{id}',  ['uses' => 'WorkflowController@getWorkflowList']);
+	
 	$router->post('workflow-list-v2',  ['uses' => 'WorkflowController@getWorkflowListV2']);
 	$router->post('workflow-list-v3',  ['uses' => 'WorkflowController@getWorkflowListV3']);
 	$router->get('workflows-progress',  ['uses' => 'WorkflowController@getWorkflowProgress']);
@@ -85,5 +89,7 @@ $router->group(['prefix' => '/'], function () use ($router) {
 	$router->post('get-goto-link',  ['uses' => 'WorkflowController@getGotoLink']);
 	$router->post('delete-goto-link',  ['uses' => 'WorkflowController@deleteGotoLink']);
 	$router->post('remove-scheduled-workflow',  ['uses' => 'WorkflowController@removeScheduledWorkflow']);
+	$router->post('edit-scheduled-workflow',  ['uses' => 'WorkflowController@editScheduledWorkflow']);
+	$router->post('edit-task/{id}',  ['uses' => 'WorkflowController@editTask']); 
 
 });

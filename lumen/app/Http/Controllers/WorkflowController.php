@@ -5,11 +5,78 @@ use App\Workflow;
 use App\Task;
 use DB;
 use Illuminate\Http\Request;
-require_once dirname(__DIR__).'\..\..\vendor\autoload.php';
+use Google_Client;
 
 class WorkflowController extends Controller
 {
-    
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+	
+	public function getWorkflowUsers()
+    {
+		$client = new Google_Client();
+		//echo '<pre>'; print_r($client);
+		$client->setApplicationName('Google Sheets API');
+		$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+		$client->setAccessType('offline');
+		$path = getcwd().'/credentials.json';
+		$client->setAuthConfig($path);
+		$service = new \Google_Service_Sheets($client);
+		$spreadsheetId = '1hMKADFhGiO7lOZ60Xgy3AkLDeL8s7i364y3QgMapdSA';
+		$range = 'Task Master Logins'; // here we use the name of the Sheet to get all the rows
+		$response = $service->spreadsheets_values->get($spreadsheetId, $range);
+		$users = $response->getValues();
+		//echo '<pre>'; print_r($users);
+		$data = json_decode(file_get_contents('php://input'), true);
+		if(isset($data['Facility_Id'])){
+	
+			$userData = [];
+			$userRole = [];
+
+			$n = 0;
+			foreach($users[0] as $role){
+				if($n > 3 ){
+					$userRole[] = $role;
+				}
+				$n++;
+			}
+
+			$i = 0;
+			foreach($users as $user){
+				if($i > 0 && $data['Facility_Id'] == $user[3]){
+					$s = 4;
+					$roleWithPerson = [];
+					foreach($userRole as $role){
+
+						$str = explode(",",$users[$i][$s]);
+						$person = [];
+						foreach($str as $val){
+							$stm = explode("|",$val);
+							$person[] = array('person_Id'=>$stm[1],'person'=>$stm[0],'email_Id'=>$stm[2],);
+							
+						}
+						$roleWithPerson[$role][] = $person;
+						$s++;
+					}
+
+					$userData['user'][] = array(
+					'username'=>$user[0],
+					'userId'=>$user[1],
+					'facilityId'=>$user[3],
+					'role' => $roleWithPerson,
+					);
+				}
+				$i++;
+			}
+			echo json_encode($userData, JSON_PRETTY_PRINT);
+			
+		}else{
+			echo 'Invalid Data!';
+		}
+	}
+	
 	public function getWorkflow()
     {
         $workflow = app('db')->select("SELECT * FROM workflows WHERE action='1' ORDER BY id ASC;");
@@ -181,7 +248,6 @@ class WorkflowController extends Controller
 			}else{
 				echo $result = 'The Workflow already existed.';
 			}
-			
 		}
     }
 	
@@ -640,9 +706,7 @@ class WorkflowController extends Controller
 	
 				}
 			}
-			
 		}
-		
     }
 	
 	public function updateWorkflowName($id, Request $request)
@@ -887,8 +951,6 @@ class WorkflowController extends Controller
 					}
 					//echo json_encode($workflowData, JSON_PRETTY_PRINT);
 				}
-				
-				
 			}
 			
 			$workflow['jobs'] = $workflowJobs;
@@ -960,69 +1022,6 @@ class WorkflowController extends Controller
 			
 		}else{
 			return 'Invalid Data!';
-		}
-	}
-	
-	public function getWorkflowUsers()
-    {
-		
-		$client = new \Google_Client();
-		$client->setApplicationName('Google Sheets API');
-		$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
-		$client->setAccessType('offline');
-		$path = 'https://soogap.info/api/workflow/credentials.json';
-		$client->setAuthConfig($path);
-		$service = new \Google_Service_Sheets($client);
-		$spreadsheetId = '1hMKADFhGiO7lOZ60Xgy3AkLDeL8s7i364y3QgMapdSA';
-		$range = 'Task Master Logins'; // here we use the name of the Sheet to get all the rows
-		$response = $service->spreadsheets_values->get($spreadsheetId, $range);
-		$users = $response->getValues();
-		//echo '<pre>'; print_r($users);
-		$data = json_decode(file_get_contents('php://input'), true);
-		if(isset($data['Facility_Id'])){
-	
-			$userData = [];
-			$userRole = [];
-
-			$n = 0;
-			foreach($users[0] as $role){
-				if($n > 3 ){
-					$userRole[] = $role;
-				}
-				$n++;
-			}
-
-			$i = 0;
-			foreach($users as $user){
-				if($i > 0 && $data['Facility_Id'] == $user[3]){
-					$s = 4;
-					$roleWithPerson = [];
-					foreach($userRole as $role){
-
-						$str = explode(",",$users[$i][$s]);
-						$person = [];
-						foreach($str as $val){
-							$stm = explode("|",$val);
-							$person[] = array('person_Id'=>$stm[1],'person'=>$stm[0],'email_Id'=>$stm[2],);
-							
-						}
-						$roleWithPerson[$role][] = $person;
-						$s++;
-					}
-
-					$userData['user'][] = array(
-					'username'=>$user[0],
-					'userId'=>$user[1],
-					'facilityId'=>$user[3],
-					'role' => $roleWithPerson,
-					);
-				}
-				$i++;
-			}
-			echo json_encode($userData, JSON_PRETTY_PRINT);
-			
-		}else{
-			echo 'Invalid Data!';
 		}
 	}
 	
@@ -1514,5 +1513,57 @@ class WorkflowController extends Controller
 		}
 	}
 	
+	public function editScheduledWorkflow()
+    {
+		$data = json_decode(file_get_contents('php://input'), true);
+		if(isset($data['Scheduled_Job_Id'])){
+			
+			app('db')->update("UPDATE scheduled_workflow SET start_date='".$data['start_date']."', start_time='".$data['start_time']."', recurring='".$data['Repeat']."', repeat_after='".$data['Repeat_after']."', repeat_every='".$data['Repeat_every']."', repeat_on='".$data['repeat_on']."' WHERE id='".$data['Scheduled_Job_Id']."'");
+			
+			echo 'The Scheduled Workflow updated successufuly!';
+		}else{
+			echo 'Something went wrong!';
+		}
+	}
+	
+	public function editTask($id)
+    {
+		$data = json_decode(file_get_contents('php://input'), true);
+		if($id){
+			$query = '';
+			if($data['name'] != 'xxx'){
+				$query .= "name='".$data['name']."'";
+			}
+			if($data['list_name'] != 'xxx'){
+				$query .= ", list_name='".$data['list_name']."'";
+			}
+			if($data['list_category'] != 'xxx'){
+				$query .= ", list_category='".$data['list_category']."'";
+			}
+			if($data['status'] != 'xxx'){
+				$query .= ", status='".$data['status']."'";
+			}
+			if($data['details'] != 'xxx'){
+				$query .= ", details='".$data['details']."'";
+			}
+			
+			if($data['share'] != 'xxx'){
+				$query .= ", share='".$data['share']."'";
+			}
+			if($data['dependent_or_concurrent'] != 'xxx'){
+				$query .= ", dependent_or_concurrent='".$data['dependent_or_concurrent']."'";
+			}
+			if($data['dependencies'] != 'xxx'){
+				$query .= ", dependencies='".$data['dependencies']."'";
+			}
+			
+			//app('db')->update("UPDATE tasks SET name='".$data['name']."', list_name='".$data['list_name']."', list_category='".$data['list_category']."', status='".$data['status']."', details='".$data['details']."', share='".$data['share']."', dependent_or_concurrent='".$data['dependent_or_concurrent']."', dependencies='".$data['dependencies']."' WHERE id='".$id."'");
+			app('db')->update("UPDATE tasks SET ".$query." WHERE id='".$id."'");
+			
+			echo 'The task updated successufuly!';
+		}else{
+			echo 'Something went wrong!';
+		}
+	}
 	
 }

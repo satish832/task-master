@@ -1,12 +1,17 @@
 <?php
 namespace App\Http\Controllers;
+use App\Http\Controllers\Controller;
 use App\ListName;
 use App\Task;
 use Illuminate\Http\Request;
 
 class TaskManagerController extends Controller
 {
-    
+    /* public function __construct()
+    {
+        $this->middleware('auth');
+    } */
+	
 	public function getListName()
     {
         return response()->json(ListName::all());
@@ -28,6 +33,13 @@ class TaskManagerController extends Controller
     {
         return response()->json(Task::where('list_name', urldecode($id))->get());
     }
+	
+	public function getTaskById($id)
+    {
+        return response()->json(Task::where('id', urldecode($id))->get());
+    }
+	
+	
 	
 	public function addTask(Request $request)
     {

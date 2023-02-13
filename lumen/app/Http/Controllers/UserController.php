@@ -31,10 +31,14 @@ class UserController extends Controller
 	
 	public function login(Request $request)
     {
-        $user = User::whereUsername($request->username)->wherePassword($request->password)->whereStatus(1)->first();
+        
+		$user = User::whereUsername($request->username)->wherePassword($request->password)->whereStatus(1)->first();
 		if($user){
-			$str = '0123456789ABCIJKLMNOPQRmnopqrstuvwxyz';
-			$apiToken = base64_encode($str);
+			$apiToken =  bin2hex(random_bytes(20));
+			User::findOrFail($user->id)->update([
+			   'api_token' => $apiToken,
+			]);
+			
 			return response()->json([
 			'success' => true,
 			'message' => 'Login Success!',
@@ -51,11 +55,32 @@ class UserController extends Controller
         die;
     }
 	
+	public function apiLogin(Request $request)
+    {
+        $user = User::whereUsername($request->username)->wherePassword($request->password)->whereStatus(1)->first();
+		if($user){
+			$apiToken =  bin2hex(random_bytes(25));
+			
+			$user = User::findOrFail($user->id)->update([
+			   'api_token' => $apiToken,
+			]);
+			
+			return response()->json([
+				'accessToken' => $apiToken,
+			], 201);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Login  fail!',
+			], 400);
+		}
+		
+        die;
+    }
+	
 	public function signup(Request $request)
     {
-        
-		
-		 try {
+		try {
             $user = User::create($request->all()); 
 			return response()->json($user, 201);
         } catch(\Illuminate\Database\QueryException $e){
@@ -67,8 +92,6 @@ class UserController extends Controller
 				], 400);
             }
         }
-
-        
     }
 	
 	public function userApproved($id, Request $request)
