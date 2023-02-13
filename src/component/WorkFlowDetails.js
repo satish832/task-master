@@ -124,7 +124,7 @@ export default class WorkFlowDetails extends Component {
 			data.map(function(val,n) {
 				if(user == val.user_name){
 					userDt = val.responsible_role;
-				}else if(val.user_id == 1){
+				}else if(val.id == 1){
 					userDt = val.responsible_role;
 				}
 			})

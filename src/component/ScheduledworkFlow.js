@@ -12,7 +12,6 @@ import {
   sortableHandle,
 } from 'react-sortable-hoc';
 
-
 export default class ScheduledworkFlow extends Component {
 	
 	constructor(props){
