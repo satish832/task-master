@@ -65,18 +65,20 @@ export default class WorkFlowProgress extends Component {
         .then(response => {
 			data = response.data;
 			
+			
 			let userDt = [];
 		
 			data.map(function(val,n) {
 				if(user == val.user_name){
 					userDt = val.responsible_role;
-				}else if(val.user_id == 1){
+				}else if(val.id == 1){
 					userDt = val.responsible_role;
 				}
 			})
 			
 			let rolePerson = [];
 			let responsibleRole = Object.keys(userDt);
+			console.log('responsibleRole->',responsibleRole);
 			
 			responsibleRole.map(function(val,n) {
 				let persons = userDt[val];

@@ -41,6 +41,7 @@ export default class WorkFlowDetails extends Component {
 			completedBefore:'',
 			doNotShare:'N',
 			gotolink:'',
+			checklist:[],
 			sendMessage:'',
 			synchronize:'',
 			detailsNote:'',
@@ -382,6 +383,7 @@ export default class WorkFlowDetails extends Component {
 				this.setState({xDaysNumber:''});
 			}
 		}
+		
 	}
 
 	editTask=(data)=>{
@@ -419,6 +421,7 @@ export default class WorkFlowDetails extends Component {
 		let doNotShare = data.share;
 		let gotolink = data.gotolink;
 		let sendMessage = data.send_message;
+		let checklist = data.checklist ? data.checklist.split(',') : [];
 		let synchronize = data.synchronize;
 		let detailsNote = data.details_note != null ? data.details_note : '';
 		//let wipNote = data.wip_note != null ? data.wip_note : '';
@@ -429,7 +432,7 @@ export default class WorkFlowDetails extends Component {
 		//console.log('data',data);
 		let currentDate = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
 		let cFormUID = data.form_id;
-		this.setState({taskId,personRole,personName,personId,personEmail,startDate,dueDate:null,xDays,xDaysNumber,completedBefore,doNotShare,gotolink,sendMessage,synchronize,detailsNote,taskNote:'',taskWipNote:''});
+		this.setState({taskId,personRole,personName,personId,personEmail,startDate,dueDate:null,xDays,xDaysNumber,completedBefore,doNotShare,gotolink,sendMessage,synchronize,checklist,detailsNote,taskNote:'',taskWipNote:''});
 	}
 	
 	updateWorkflowTask=()=>{
@@ -449,6 +452,7 @@ export default class WorkFlowDetails extends Component {
 		let sendMessage = this.state.sendMessage;
 		let synchronize = this.state.synchronize;
 		let detailsNote = this.state.detailsNote;
+		let checklist = this.state.checklist.join();
 		//let wipNote = this.state.wipNote;
 		//let workflowOption = this.state.workflowOption;
 		let ApiUrl = $('#ApiUrl').val();
@@ -470,6 +474,7 @@ export default class WorkFlowDetails extends Component {
 		//formData.append('wipNote', wipNote);
 		formData.append('doNotShare', doNotShare);
 		formData.append('gotolink', gotolink);
+		formData.append('checklist', checklist);
 	
 		axios({
 			method: 'POST',
@@ -521,7 +526,23 @@ export default class WorkFlowDetails extends Component {
 		this.setState({taskNote:note});
 	}
 	
-
+	showCheckList=(op)=>{
+		if(op == true){
+			$('.add-checklist').show();
+		}else{
+			$('.add-checklist').hide();
+		}
+	}
+	
+	handleCheckList=()=>{
+		let checklist = this.state.checklist;
+		console.log('checkListOption->',this.state.checkListOption);
+		let checkListOption = this.state.checkListOption;
+		checklist.push(checkListOption);
+		this.setState({checklist,checkListOption:''});
+	}
+	
+	
 	editWorkflow=()=>{
 		
 		let workflowId = $('#workflowOptionVal').val();
@@ -550,7 +571,7 @@ export default class WorkFlowDetails extends Component {
 	
 	render() {
 		
-		const {workflowList,taskList,workflowTasks,wflowTasks,responsibleRole,responsiblePerson,goLinks,categories,catId} = this.state;
+		const {workflowList,taskList,workflowTasks,wflowTasks,responsibleRole,responsiblePerson,goLinks,categories,catId,checklist} = this.state;
 		let categoriesHtml = categories.map(function(val,i) {
 			return (
 				<option value={val.id} key={i}>{val.name}</option>
@@ -572,6 +593,14 @@ export default class WorkFlowDetails extends Component {
 					<option value={val['id']} key={i}>{val['name']}</option>
 				);
 			}
+		})
+		
+		let checklistHtml = checklist.map(function(val,i) {
+			return (
+				<label className="label-list">
+				<input name="demo" type="checkbox" value={val} disabled/> {val}
+				</label>						
+			);
 		})
 		
 		let goLinksHtml = goLinks.map(function(val,i) {
@@ -600,7 +629,7 @@ export default class WorkFlowDetails extends Component {
 		}); 
 		
 		let href = window.location.href.split('?')[0];
-		//console.log('goLinks->',this.state.goLinks);
+		console.log('checklist->',this.state.checklist);
 		let wName = $('#workflowOptionVal option:selected').text();
 		return (
 			<div id="wrapper2" className="toggled">
@@ -851,6 +880,20 @@ export default class WorkFlowDetails extends Component {
 								</div>
 								<div id="wipNote" className="wip-Note-box"></div>
 							</div> */}
+							
+							<div className="row-input list-sec">
+								<label className="label-control" onClick={()=>this.showCheckList(true)}><input name="demo" type="checkbox" value="Y" checked='checked' disabled/> Checklist</label>
+								<div className="add-checklist" style={{display:'none'}}>
+									<div className="check-list">
+										{checklistHtml}
+									</div>
+									<div className="checklist-add">
+									<input className="form-control input-checklist" name="checkListOption" value={this.state.checkListOption} onChange={this.getValue} />
+									<button type="button" className="btn btn-info btn-check-list btn-sm" onClick={this.handleCheckList}>Add</button>&nbsp;
+									<button type="button" className="btn btn-danger btn-check-list btn-sm" onClick={()=>this.showCheckList(false)}>Cancel</button>
+									</div>
+								</div>
+							</div>
 							
 							<div className="row-input">
 								<label className="label-control"> Go To Link </label>
