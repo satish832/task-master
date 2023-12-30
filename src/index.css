@@ -667,3 +667,5 @@ input:checked+.showAllSlide:before {
 .checklist-add{margin-top: 10px;margin-bottom: 10px;}
 .label-list{display: block;}
 .list-sec{margin-top: 5px;margin-bottom: 5px;}
+.add-checklist{position: relative;}
+.delete-checklist{position: absolute;top: -25px;left: 100px;}

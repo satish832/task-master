@@ -536,12 +536,11 @@ export default class WorkFlowDetails extends Component {
 	
 	handleCheckList=()=>{
 		let checklist = this.state.checklist;
-		console.log('checkListOption->',this.state.checkListOption);
-		let checkListOption = this.state.checkListOption;
+		//console.log('checkListOption->',this.state.checkListOption);
+		let checkListOption = this.state.checkListOption+':false';
 		checklist.push(checkListOption);
 		this.setState({checklist,checkListOption:''});
 	}
-	
 	
 	editWorkflow=()=>{
 		
@@ -567,6 +566,10 @@ export default class WorkFlowDetails extends Component {
 				alert('error::'+ error);
 			})
 		}	
+	}
+	
+	deleteCheckList=()=>{
+		this.setState({checklist:[]});
 	}
 	
 	render() {
@@ -596,9 +599,10 @@ export default class WorkFlowDetails extends Component {
 		})
 		
 		let checklistHtml = checklist.map(function(val,i) {
+			let listtext = val.split(':');
 			return (
 				<label className="label-list">
-				<input name="demo" type="checkbox" value={val} disabled/> {val}
+				<input name="demo" type="checkbox" value={listtext[0]} disabled/> {listtext[0]}
 				</label>						
 			);
 		})
@@ -629,7 +633,7 @@ export default class WorkFlowDetails extends Component {
 		}); 
 		
 		let href = window.location.href.split('?')[0];
-		console.log('checklist->',this.state.checklist);
+		//console.log('checklist->',this.state.checklist);
 		let wName = $('#workflowOptionVal option:selected').text();
 		return (
 			<div id="wrapper2" className="toggled">
@@ -884,6 +888,9 @@ export default class WorkFlowDetails extends Component {
 							<div className="row-input list-sec">
 								<label className="label-control" onClick={()=>this.showCheckList(true)}><input name="demo" type="checkbox" value="Y" checked='checked' disabled/> Checklist</label>
 								<div className="add-checklist" style={{display:'none'}}>
+								    {this.state.checklist.length > 0 ?
+								    <div className="delete-checklist" onClick={() => {if (window.confirm('Are you sure you want to Delete this checklist?')) this.deleteCheckList()}} ><i className="fa fa-trash"></i></div>
+									:null}
 									<div className="check-list">
 										{checklistHtml}
 									</div>

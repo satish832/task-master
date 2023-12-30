@@ -883,7 +883,7 @@ export default class WorkFlowBuilder extends Component {
 								<div className="workflow-save">
 									<label className="save-lable">Name Workflow:</label>
 									<input id="workflowName" className="form-control" name="workflowName" type="text" />
-									<button className="btn btn-primary" type="button" onClick={()=>this.handleSubmit()}>Save Workflow</button>
+									<button className="btn btn-primary" type="button" onClick={()=>this.handleSubmit()}>Save</button>
 								</div>
 								
 							}
