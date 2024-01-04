@@ -439,7 +439,7 @@ select.form-control:not([size]):not([multiple]) {
     margin: 0;
 }
 .tracker-table.table td, .tracker-table.table th {
-    padding: 3px 10px!important;
+    padding: 2px 8px !important;
 }
 .note-row {
     display: none;
@@ -669,3 +669,24 @@ input:checked+.showAllSlide:before {
 .list-sec{margin-top: 5px;margin-bottom: 5px;}
 .add-checklist{position: relative;}
 .delete-checklist{position: absolute;top: -25px;left: 100px;}
+.icon-checklist:before {
+    content: "\e91a";
+}
+.task-list-option{margin-bottom: 5px;}
+.task-list-option input[type=checkbox] {
+    cursor: pointer;
+    height: 14px;
+    margin: 0;
+    width: 14px;
+}
+
+.checklist-completed {text-decoration: line-through;font-size: 14px;}
+.custom-progress-bar{    width: 100%;margin-bottom: 10px;position: relative;}
+.custom-progress-bar progress{  width: 90%;margin-left: 35px;height: 20px;}
+.custom-progress-bar span{position: absolute;top: 0px;}
+.list-header{margin-bottom: 20px; font-size: 16px;}
+.modal-header-costom{height: 15px;}
+.modal-header-costom button{margin-top: -5px;}
+.list-header input { height: 14px; width: 14px; margin-right: 2px;}
+.custom-btn{padding: 0px 5px !important;}
+.hide-row{display: none !important;}

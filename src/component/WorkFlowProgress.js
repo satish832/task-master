@@ -36,6 +36,7 @@ export default class WorkFlowProgress extends Component {
 			branchs:[],
 			taskNote:'',
 			checklist:[],
+			taskName:'',
 			taskWipNote:'',
 			startDate:'',
 			endDate:'',
@@ -48,6 +49,7 @@ export default class WorkFlowProgress extends Component {
 			greaterCount:0,
 			checklistWid:'',
 			checklistTaskId:'',
+			listPercentage:0,
 		}
 
     }
@@ -234,9 +236,23 @@ export default class WorkFlowProgress extends Component {
 		this.setState({taskNote:note});
 	}
 	
-	taskChecklist=(wid,taskId,checklist)=>{
-		if(checklist){
-			this.setState({checklist:checklist ? checklist.split(',') : [],checklistWid:wid,checklistTaskId:taskId});
+	taskChecklist=(task_name,job_id,wid,taskId,checklist)=>{
+		let checklists = checklist.split(',');
+		if(checklists.length > 0){
+			let checkedCount = 0;
+			
+			checklists.map((val, index) => {
+				let listtext = val.split(':');
+				
+				if(listtext[1] == 'true'){
+					checkedCount= checkedCount+1;
+				}
+				
+			})
+			
+			let listPercentage = checkedCount/checklists.length*100;
+			
+			this.setState({taskName:task_name,checklist:checklists ? checklists : [],noteJobId:job_id,checklistWid:wid,checklistTaskId:taskId,checkedCount,listPercentage});
 		}
 	}
 	
@@ -480,6 +496,7 @@ export default class WorkFlowProgress extends Component {
 		})
 		.then(response => {
 			this.getWorkflow();
+			this.getWorkflowJobDetails(this.state.noteJobId);
 		}).catch(error => {
 			alert('error::'+ error);
 		})
@@ -487,14 +504,17 @@ export default class WorkFlowProgress extends Component {
 	
 	handalChecklistOption =(name)=> {
 		let checklist = this.state.checklist;
+		let updateChecklist = [];
+		let that = this;
 		if($("input[name='"+name+"']").prop("checked") == true){
 			
 			if(checklist.length > 0){
-				let updateChecklist = [];
 				checklist.map(function(val,i) {
 					let str = val.split(':');
 					if(str[0] == name){
 						updateChecklist.push(str[0]+':'+'true');
+						let note = 'Checklist item completed: '+name+' - by '+localStorage.getItem('username');
+						that.handleChecklistNote(note);
 					}else{
 						updateChecklist.push(str[0]+':'+str[1]);
 					}
@@ -504,11 +524,12 @@ export default class WorkFlowProgress extends Component {
 					
 		}else{
 			if(checklist.length > 0){
-				let updateChecklist = [];
 				checklist.map(function(val,i) {
 					let str = val.split(':');
 					if(str[0] == name){
 						updateChecklist.push(str[0]+':'+'false');
+						let note = 'Checklist item unchecked: '+name+' - by '+localStorage.getItem('username');
+						that.handleChecklistNote(note);
 					}else{
 						updateChecklist.push(str[0]+':'+str[1]);
 					}
@@ -516,6 +537,57 @@ export default class WorkFlowProgress extends Component {
 				this.setState({checklist:updateChecklist});
 			}
 		}
+		
+		
+		if(updateChecklist.length > 0){
+			let checkedCount = 0;
+			updateChecklist.map((val, index) => {
+				let listtext = val.split(':');
+				
+				if(listtext[1] == 'true'){
+					checkedCount= checkedCount+1;
+				}
+				
+			})
+			
+			let listPercentage = checkedCount/updateChecklist.length*100;
+			
+			this.setState({checkedCount,listPercentage});
+		}
+		
+		
+	}
+	
+	handleChecklistNote=(note)=>{
+		
+		let jobId = this.state.noteJobId;
+		let wId = this.state.checklistWid;
+		let taskId = this.state.checklistTaskId;
+		//let note = name+' - Completed by '+localStorage.getItem('username');
+		
+		let ApiUrl = $('#ApiUrl').val();
+		let url = ApiUrl+'add-task-note';
+		//let date = new Date();
+		//let currentDate = moment(date).format('MM/DD/YYYY HH:MM');
+		let formData = new FormData();
+		formData.append('job_id', jobId);
+		formData.append('wid', wId);
+		formData.append('task_id', taskId);
+		formData.append('note', note);
+		//formData.append('date', currentDate);
+		axios({
+			method: 'POST',
+			url: url,
+			data: formData,
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		})
+		.then(response => {
+			this.getWipNote(jobId,wId,taskId);
+		}).catch(error => {
+			alert('error::'+ error);
+		})
 	}
 	
 	render() {
@@ -530,7 +602,7 @@ export default class WorkFlowProgress extends Component {
 		let superViewId = '';
 		let assignedDays = '';
 		
-		if(workflowFirstTask){
+		if(workflowFirstTask && !viewWorkflowDetails){
 			
 			rowHtml = workflowFirstTask.map(function(row,i) {
 				if(row.task.id){
@@ -664,7 +736,7 @@ export default class WorkFlowProgress extends Component {
 						<td className={className}>{row.task.days_spent}</td>
 						<td><span className="task-icon"><img src={href+'/'+icon+'.png'} alt="Status" width="15" height="15" /></span></td>
 						
-						<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup" onClick={() => { that.taskChecklist(row.task.wid,row.task.task_id,row.task.checklist) } }>{checklistChecked}</span></td>
+						<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup" onClick={() => { that.taskChecklist(row.task.name,row.task.job_id,row.task.wid,row.task.task_id,row.task.checklist) } }>{checklistChecked}</span></td>
 						
 						<td>
 						<span className="task-icon task-note" data-toggle="modal" data-target="#taskNote" onClick={() => { that.detailsNote(row.task.details_note) } }><i className="fa fa-eye"></i></span>
@@ -690,6 +762,7 @@ export default class WorkFlowProgress extends Component {
 			let patient_name = workflowJobTasks.patient_name;
 			assignedDays = 0;
 			rowHtml2 = workflowJobTasks.map(function(row,i) {
+				//console.log('row',row);
 				if(row.task_id){
 				let icon = 'x';
 				if(row.status == 'To Do'){
@@ -717,6 +790,21 @@ export default class WorkFlowProgress extends Component {
 					className = 'row-yellow';
 				}
 				
+				let checklist = row.checklist ? row.checklist.split(',') : [];
+				let checklistChecked = '';
+				if(checklist.length > 0){
+					let checkedCount = 0;
+					//let uncheckedCount = 0;
+					checklist.map(function(val,i) {
+						let str = val.split(':');
+						if(str[1] == 'true'){
+							checkedCount= checkedCount+1;
+						}
+					})
+					
+					checklistChecked = checkedCount+'/'+checklist.length;
+				}
+				
 				return (<tbody>
 					<tr>
 					<td><span className="task-icon"><img src={href+'/'+icon+'.png'} alt="Status" width="15" height="15" /></span></td>
@@ -728,8 +816,12 @@ export default class WorkFlowProgress extends Component {
 					<td>
 					<span className="task-icon task-note" data-toggle="modal" data-target="#taskNote" onClick={() => { that.detailsNote(row.details_note) } }><i className="fa fa-eye"></i></span>
 					</td>
+					
+					<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup2" onClick={() => { that.taskChecklist(row.task_name,row.job_id,row.wid,row.task_id,row.checklist) } }>{checklistChecked}</span></td>
+					
 					<td><span className="task-icon task-note" data-toggle="modal" data-target="#taskWipNote" onClick={() => { that.wipNote(row.job_id,row.wid,row.task_id) } }><img src={href+'/note.png'} alt="Status" width="15" height="15" /></span></td>
 					<td><a href={row.gotolink ? row.gotolink : 'javascript:void(0)'} target="_blank"><span className="task-icon"><img src={href+'/gotolink.png'} alt="Status" width="15" height="15" /></span></a></td>
+					
 					</tr>
 					<tr><td id={"note_row"+row.id} className="note-row" colspan="20"><div className="note-row-div" id={"new_note_"+row.id}></div></td></tr>
 				</tbody>);
@@ -1044,22 +1136,27 @@ export default class WorkFlowProgress extends Component {
 							<div className="modal-dialog modal-lg custom-modal mds-description-modal">
 								<div className="modal-content">
 								  <div className="modal-header">
-									<h5 className="modal-title">Task Checklist</h5>
-									<button type="button" className="close" data-dismiss="modal">&times;</button>
+									<h6>{this.state.taskName}</h6>
+									<button className="close custom-btn" type="button" data-dismiss="modal">&times;</button>
 								  </div>
 								  <div className="modal-body">
+								  <div className="list-header"><input type="checkbox" checked="checked" disabled /> Checklist</div>
+
+								  <div className="custom-progress-bar"><span>{parseInt(this.state.listPercentage) +'%'}</span><progress id="file" value={this.state.checkedCount} max={checklist.length}></progress></div>
 									
 									{checklist.map((val, index) => {
 										let listtext = val.split(':');
 										
 										let checked = '';
+										let classs = '';
 										if(listtext[1] == 'true'){
 											checked = 'checked';
+											classs = 'checklist-completed';
 										}
 										
 										return(
 											<div className={'task-list-option'}>
-												<input name={listtext[0]} type="checkbox" value={listtext[0]} onClick={()=>this.handalChecklistOption(listtext[0])} checked={checked} /> {listtext[0]}
+												<input name={listtext[0]} type="checkbox" value={listtext[0]} onClick={()=>this.handalChecklistOption(listtext[0])} checked={checked} /> <span className={classs}> {listtext[0]}</span>
 											</div>
 										);
 									})}
@@ -1140,7 +1237,8 @@ export default class WorkFlowProgress extends Component {
 							<th>Responsible Person</th>
 							<th>Assigned Days</th>
 							<th>Actual days</th>
-							<th></th>
+							<th>View</th>
+							<th>Checklist</th>
 							<th></th>
 							<th></th>
 						</tr>
@@ -1159,6 +1257,45 @@ export default class WorkFlowProgress extends Component {
 								  </div>
 								  <div className="modal-footer">
 										<div className="popup-btn-com">
+											<button type="button" className="btn btn-danger float-right" data-dismiss="modal">Close</button>
+										</div>
+								  </div>
+								</div>
+							</div>
+						</div>
+						
+						<div className="modal" id={"checkListPopup2"} role="dialog">
+							<div className="modal-dialog modal-lg custom-modal mds-description-modal">
+								<div className="modal-content">
+								  <div className="modal-header">
+									<h6>{this.state.taskName}</h6>
+									<button className="close custom-btn" type="button" data-dismiss="modal">&times;</button>
+								  </div>
+								  <div className="modal-body">
+								  <div className="list-header"><input type="checkbox" checked="checked" disabled /> Checklist</div>
+
+								  <div className="custom-progress-bar"><span>{parseInt(this.state.listPercentage) +'%'}</span><progress id="file" value={this.state.checkedCount} max={checklist.length}></progress></div>
+									
+									{checklist.map((val, index) => {
+										let listtext = val.split(':');
+										
+										let checked = '';
+										let classs = '';
+										if(listtext[1] == 'true'){
+											checked = 'checked';
+											classs = 'checklist-completed';
+										}
+										
+										return(
+											<div className={'task-list-option'}>
+												<input name={listtext[0]} type="checkbox" value={listtext[0]} onClick={()=>this.handalChecklistOption(listtext[0])} checked={checked} /><span className={classs} > {listtext[0]}</span>
+											</div>
+										);
+									})}
+								  </div>
+								  <div className="modal-footer">
+										<div className="popup-btn-com">
+											<button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.saveChecklistOption}>Save</button>&nbsp;
 											<button type="button" className="btn btn-danger float-right" data-dismiss="modal">Close</button>
 										</div>
 								  </div>
