@@ -58,6 +58,7 @@ export default class WorkFlowDetails extends Component {
 			workflowId:'',
 			catId:'',
 			daysCount:0,
+			status_change:false,
 		}
 		
 		this.csvLink = React.createRef();
@@ -334,6 +335,12 @@ export default class WorkFlowDetails extends Component {
 		//console.log('res->',res);
 		this.setState({[event.target.name]:event.target.value});
 		
+		if($("input[name='status_change']").prop("checked") == true){
+			this.setState({status_change:true});
+		}else if($("input[name='status_change']").prop("checked") == false){
+			this.setState({status_change:false});
+		}
+		
 		if($("input[name='xDays']").prop("checked") == false){
 			this.setState({xDays:'N'});
 		}
@@ -421,6 +428,7 @@ export default class WorkFlowDetails extends Component {
 		let doNotShare = data.share;
 		let gotolink = data.gotolink;
 		let sendMessage = data.send_message;
+		let status_change = data.status_change;
 		let checklist = data.checklist ? data.checklist.split(',') : [];
 		let synchronize = data.synchronize;
 		let detailsNote = data.details_note != null ? data.details_note : '';
@@ -432,7 +440,7 @@ export default class WorkFlowDetails extends Component {
 		//console.log('data',data);
 		let currentDate = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
 		let cFormUID = data.form_id;
-		this.setState({taskId,personRole,personName,personId,personEmail,startDate,dueDate:null,xDays,xDaysNumber,completedBefore,doNotShare,gotolink,sendMessage,synchronize,checklist,detailsNote,taskNote:'',taskWipNote:''});
+		this.setState({taskId,personRole,personName,personId,personEmail,startDate,dueDate:null,xDays,xDaysNumber,completedBefore,doNotShare,gotolink,sendMessage,synchronize,checklist,detailsNote,taskNote:'',taskWipNote:'',status_change});
 	}
 	
 	updateWorkflowTask=()=>{
@@ -453,6 +461,7 @@ export default class WorkFlowDetails extends Component {
 		let synchronize = this.state.synchronize;
 		let detailsNote = this.state.detailsNote;
 		let checklist = this.state.checklist.join();
+		let status_change = this.state.status_change;
 		//let wipNote = this.state.wipNote;
 		//let workflowOption = this.state.workflowOption;
 		let ApiUrl = $('#ApiUrl').val();
@@ -475,7 +484,8 @@ export default class WorkFlowDetails extends Component {
 		formData.append('doNotShare', doNotShare);
 		formData.append('gotolink', gotolink);
 		formData.append('checklist', checklist);
-	
+		formData.append('status_change', status_change);
+		
 		axios({
 			method: 'POST',
 			url: url,
@@ -572,9 +582,24 @@ export default class WorkFlowDetails extends Component {
 		this.setState({checklist:[]});
 	}
 	
+	deleteCheckListItem=(item)=>{
+		let checklist = this.state.checklist;
+		let updateChecklist = [];
+		if(checklist.length > 0){
+			checklist.map(function(val,i) {
+				let str = val.split(':');
+				if(str[0] != item){
+					updateChecklist.push(val);
+				}
+			})
+			this.setState({checklist:updateChecklist});
+		}
+	}
+	
 	render() {
 		
 		const {workflowList,taskList,workflowTasks,wflowTasks,responsibleRole,responsiblePerson,goLinks,categories,catId,checklist} = this.state;
+		
 		let categoriesHtml = categories.map(function(val,i) {
 			return (
 				<option value={val.id} key={i}>{val.name}</option>
@@ -597,12 +622,14 @@ export default class WorkFlowDetails extends Component {
 				);
 			}
 		})
-		
+		let thats = this;
 		let checklistHtml = checklist.map(function(val,i) {
 			let listtext = val.split(':');
+			
 			return (
 				<label className="label-list">
 				<input name="demo" type="checkbox" value={listtext[0]} disabled/> {listtext[0]}
+				<span className="delete-checklist-item" onClick={() => {if (window.confirm('Are you sure you want to Delete this checklist item?')) thats.deleteCheckListItem(listtext[0])}} ><i className="fa fa-trash"></i></span>
 				</label>						
 			);
 		})
@@ -895,9 +922,11 @@ export default class WorkFlowDetails extends Component {
 										{checklistHtml}
 									</div>
 									<div className="checklist-add">
-									<input className="form-control input-checklist" name="checkListOption" value={this.state.checkListOption} onChange={this.getValue} />
+									<input className="form-control input-checklist" name="checkListOption" value={this.state.checkListOption} onChange={this.getValue} placeholder="Add an item" />
 									<button type="button" className="btn btn-info btn-check-list btn-sm" onClick={this.handleCheckList}>Add</button>&nbsp;
 									<button type="button" className="btn btn-danger btn-check-list btn-sm" onClick={()=>this.showCheckList(false)}>Cancel</button>
+									<span className="change-status-com"><input name="status_change" type="checkbox" value="Y" onChange={this.getValue} checked={this.state.status_change == 'true' ? true : false} /> Status to complete when 100%</span>
+									
 									</div>
 								</div>
 							</div>

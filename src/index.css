@@ -690,3 +690,5 @@ input:checked+.showAllSlide:before {
 .list-header input { height: 14px; width: 14px; margin-right: 2px;}
 .custom-btn{padding: 0px 5px !important;}
 .hide-row{display: none !important;}
+.delete-checklist-item{margin-left: 10px;}
+.change-status-com{margin-left: 20px;}
