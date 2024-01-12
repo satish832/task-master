@@ -69,11 +69,16 @@ export default class goToTask extends Component {
 				
 				setTimeout(function(){
 					$('#editTask').modal('show');
+					$('#taskGuid').val('');
 				}, 1000);
 			})
 		}else{
 			alert('Please enter the Task Guid!');
 		}
+	}
+	
+	saveTaskData=() => {
+		$('#taskGuid').val('');
 	}
 	
 	updateTaskOption=(event)=>{
@@ -212,7 +217,7 @@ export default class goToTask extends Component {
 			listPercentage = checkedCount/checklist.length*100;
 		} */
 
-		console.log('taskDetails->',taskDetails);
+		//console.log('taskDetails->',taskDetails);
 		return (
 			<div class="container">
 			<div className="row justify-content-center mt-3">
@@ -221,10 +226,10 @@ export default class goToTask extends Component {
 			</div>
 				<div className="col-md-5">
 					<div class="row">
-						<div class="col-md-9 col-9">
-							<input type="text" name="goto" className="form-control" id="taskGuid" placeholder="Enter task ID to Go-to a Task" value="01G97N06H0GCN3JR0P99DMDN75-01G7YT23A89H1VE1TA4HME9NDV"></input>
+						<div class="col-md-9 ">
+							<input type="text" name="goto" className="form-control" id="taskGuid" placeholder="Enter task ID to Go-to a Task"></input>
 						</div>
-						<div class="col-md-3 col-3 pl-0">
+						<div class="col-md-3 pl-lg-0 pl-md-0 mt-lg-0 mt-md-0 mt-3">
 						<button type="submit" className="btn btn-primary btn-block" onClick={this.getTaskData}>Submit</button>
 						</div>
 					</div>
@@ -299,11 +304,11 @@ export default class goToTask extends Component {
 							</div>
 							<div className="col-md-12 mt-3">
 								<h5>WIP Note</h5>
-								<form className="">
-									<div className="form-group">
-										<textarea className="form-control" name="addWipNote" value={this.state.addWipNote} onChange={this.getValue}> </textarea>
-									</div>
-								</form>
+								
+								<div className="form-group">
+									<textarea className="form-control" name="addWipNote" value={this.state.addWipNote} onChange={this.getValue}> </textarea>
+								</div>
+								
 							</div>
 							
 							
@@ -312,7 +317,7 @@ export default class goToTask extends Component {
 					  <div className="modal-footer">
 							<div className="popup-btn-com">
 								<button type="button" className="btn btn-danger float-right" data-dismiss="modal">Close</button>
-								<button type="button" className="btn btn-info float-right mr-1" data-dismiss="modal">Save</button>
+								<button type="button" className="btn btn-info float-right mr-1" data-dismiss="modal" onClick={this.saveTaskData}>Save</button>
 							</div>
 					  </div>
 					</div>

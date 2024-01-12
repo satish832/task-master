@@ -703,8 +703,7 @@ input:checked+.showAllSlide:before {
 .goto-input{text-align: center;}
 .top-right-login{display:none}
 
-@media only screen and (max-width:767px){
-.login-img{display:none;} 
+@media only screen and (max-width:767px){ 
 .top-right-login{display:block;}
 .top-header{padding:15px !important;}
 .instance-version{ position:inherit; margin-bottom: 10px;}
@@ -714,6 +713,6 @@ input:checked+.showAllSlide:before {
 .sign-out-btn{width:100% !important;}
 .user-top-outer{ margin-bottom:0px;}
 .go-to-task-modal .modal-dialog{ margin:0px !important;}
-.go-to-task-modal .modal-content{border: 0px solid rgba(0,0,0,.2); border-radius: 0;}
+.go-to-task-modal .modal-content{border: 0px solid rgba(0,0,0,.2); border-radius: 0; height: 100vh;}
 .go-to-task-modal .form-check{padding-left:0px !important;}
 }
