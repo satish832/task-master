@@ -236,7 +236,7 @@ export default class WorkFlowProgress extends Component {
 		this.setState({taskNote:note});
 	}
 	
-	taskChecklist=(task_name,job_id,wid,taskId,checklist)=>{
+	taskChecklist=(id,task_name,job_id,wid,taskId,checklist,status_change,task_start_date)=>{
 		let checklists = checklist.split(',');
 		if(checklists.length > 0){
 			let checkedCount = 0;
@@ -252,7 +252,7 @@ export default class WorkFlowProgress extends Component {
 			
 			let listPercentage = checkedCount/checklists.length*100;
 			
-			this.setState({taskName:task_name,checklist:checklists ? checklists : [],noteJobId:job_id,checklistWid:wid,checklistTaskId:taskId,checkedCount,listPercentage});
+			this.setState({tId:id,taskName:task_name,checklist:checklists ? checklists : [],noteJobId:job_id,checklistWid:wid,checklistTaskId:taskId,checkedCount,listPercentage,status_change,task_start_date});
 		}
 	}
 	
@@ -264,7 +264,7 @@ export default class WorkFlowProgress extends Component {
 	
 	handleWipNote=()=>{
 		
-		let noteJobId = this.state.noteJobId;
+		/* let noteJobId = this.state.noteJobId;
 		let noteWId = this.state.noteWId;
 		let noteTaskId = this.state.noteTaskId;
 		let addWipNote = this.state.addWipNote;
@@ -293,7 +293,7 @@ export default class WorkFlowProgress extends Component {
 			this.setState({addWipNote:''});
 		}).catch(error => {
 			alert('error::'+ error);
-		})	
+		})	 */
 	}
 	
 	handleWipNoteByRow=(job_id,wid,task_id,row_id) => {
@@ -477,11 +477,12 @@ export default class WorkFlowProgress extends Component {
 	
 	saveChecklistOption =()=> {
 		let taskId = this.state.checklistTaskId;
+		let tId = this.state.tId;
+		let task_start_date = this.state.task_start_date;
 		let workflowId = this.state.checklistWid;
 		let checklist = this.state.checklist.join();
 		let ApiUrl = $('#ApiUrl').val();
 		let url = ApiUrl+'update-workflow-task-checklist';
-		
 		let formData = new FormData();
 		formData.append('taskId', taskId);
 		formData.append('workflowId', workflowId);
@@ -495,11 +496,54 @@ export default class WorkFlowProgress extends Component {
 			}
 		})
 		.then(response => {
+			let checkedCount = this.state.checkedCount;
+			let status_change = this.state.status_change;
+			if(checkedCount == this.state.checklist.length && status_change == 'true'){
+				this.updateTaskToComplete(tId,task_start_date);
+			}
 			this.getWorkflow();
 			this.getWorkflowJobDetails(this.state.noteJobId);
 		}).catch(error => {
 			alert('error::'+ error);
 		})
+	}
+	
+	updateTaskToComplete=(tId,task_start_date)=>{
+		let val = 'Complete';
+		let days = 0;
+		let ApiUrl = $('#ApiUrl').val();
+		let url = ApiUrl+'update-option-v2';
+		let date = new Date();
+		let currentDate = moment(date).format('MM-DD-YYYY');
+		
+		let startDate = moment(task_start_date).format('YYYY-MM-DD');
+		
+		if(val == 'Complete'){
+			let start = new Date(startDate);
+			let diff  = new Date(date - start);
+			days  = Math.round(diff/1000/60/60/24);
+		}
+
+		let formData = new FormData();
+		formData.append('Id', tId);
+		formData.append('option', val);
+		formData.append('date', currentDate);
+		formData.append('days', days);
+		formData.append('user', localStorage.getItem('username'));
+		axios({
+			method: 'POST',
+			url: url,
+			data: formData,
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		})
+		.then(response => {
+			this.getWorkflow();
+		}).catch(error => {
+			alert('error::'+ error);
+		})
+		
 	}
 	
 	handalChecklistOption =(name)=> {
@@ -592,7 +636,7 @@ export default class WorkFlowProgress extends Component {
 	
 	render() {
 		const {workflowFirstTask,workflows,wCategories,filterWorkflow,filterCategory,filterRole,filterPerson,filterStatus,filterBranch,filterType,filterCompany,filterPatient,responsibleRole,responsiblePerson,branchs,types,wInsurance,wPatients,viewWorkflowDetails,workflowListTable,workflowJob,workflowJobTasks,superViewIcon,superViewShow,workflowSuperJobs,rolePerson,updateChecklist,checklist} = this.state;
-		//console.log('workflowFirstTask->',workflowFirstTask);
+		console.log('workflowFirstTask->',workflowFirstTask);
 		let rowHtml = '';
 		let rowHtml2 = '';
 		let rowHtml3 = '';
@@ -736,7 +780,7 @@ export default class WorkFlowProgress extends Component {
 						<td className={className}>{row.task.days_spent}</td>
 						<td><span className="task-icon"><img src={href+'/'+icon+'.png'} alt="Status" width="15" height="15" /></span></td>
 						
-						<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup" onClick={() => { that.taskChecklist(row.task.name,row.task.job_id,row.task.wid,row.task.task_id,row.task.checklist) } }>{checklistChecked}</span></td>
+						<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup" onClick={() => { that.taskChecklist(row.task.id,row.task.name,row.task.job_id,row.task.wid,row.task.task_id,row.task.checklist,row.task.status_change,row.task.task_start_date) } }>{checklistChecked}</span></td>
 						
 						<td>
 						<span className="task-icon task-note" data-toggle="modal" data-target="#taskNote" onClick={() => { that.detailsNote(row.task.details_note) } }><i className="fa fa-eye"></i></span>
@@ -817,7 +861,7 @@ export default class WorkFlowProgress extends Component {
 					<span className="task-icon task-note" data-toggle="modal" data-target="#taskNote" onClick={() => { that.detailsNote(row.details_note) } }><i className="fa fa-eye"></i></span>
 					</td>
 					
-					<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup2" onClick={() => { that.taskChecklist(row.task_name,row.job_id,row.wid,row.task_id,row.checklist) } }>{checklistChecked}</span></td>
+					<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup2" onClick={() => { that.taskChecklist(row.id,row.task_name,row.job_id,row.wid,row.task_id,row.checklist,row.status_change,row.task_start_date) } }>{checklistChecked}</span></td>
 					
 					<td><span className="task-icon task-note" data-toggle="modal" data-target="#taskWipNote" onClick={() => { that.wipNote(row.job_id,row.wid,row.task_id) } }><img src={href+'/note.png'} alt="Status" width="15" height="15" /></span></td>
 					<td><a href={row.gotolink ? row.gotolink : 'javascript:void(0)'} target="_blank"><span className="task-icon"><img src={href+'/gotolink.png'} alt="Status" width="15" height="15" /></span></a></td>

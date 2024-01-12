@@ -8,25 +8,27 @@ import WorkFlowDetails from "./component/WorkFlowDetails";
 import WorkFlowProgress from "./component/WorkFlowProgress";
 import ScheduledworkFlow from "./component/ScheduledworkFlow";
 import UserManager from "./component/UserManager";
+import GoToTask from "./component/goToTask";
 
 class TaskMaster extends Component {
 	
 	constructor(props) {
         super(props);
 	 	this.state ={
-			taskManager:localStorage.getItem('role') == 'Subscriber' ? false : true,
+			taskManager:localStorage.getItem('role') == 'Subscriber' || localStorage.getItem('role') == 'General' ? false : true,
 			workFlow:false,
 			workFlowManager:false,
 			workFlowDetails:false,
 			workFlowProgress:localStorage.getItem('role') == 'Subscriber' ? true : false,
 			scheduledworkFlow:false,
 			userManager:false,
+			goToTask:localStorage.getItem('role') == 'General' ? true : false,
 	 	}
     }
    	
 	builderOption = (event) => {
 		let val = event.target.value;
-		this.setState({workFlow:false,taskManager:false,workFlowManager:false,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:false,userManager:false});
+		this.setState({workFlow:false,taskManager:false,workFlowManager:false,workFlowDetails:false,workFlowProgress:false,scheduledworkFlow:false,userManager:false,goToTask:false});
 		if(val == 'workFlow'){
 			this.setState({workFlow:true});
 		}else if(val == 'taskManager'){
@@ -41,11 +43,13 @@ class TaskMaster extends Component {
 			this.setState({scheduledworkFlow:true});
 		}else if(val == 'userManager'){
 			this.setState({userManager:true});
+		}else if(val == 'goToTask'){
+			this.setState({goToTask:true});
 		}
     }
 	
     render(){
-        const {taskManager,workFlow,workFlowManager,workFlowDetails,workFlowProgress,scheduledworkFlow,userManager} = this.state;
+        const {taskManager,workFlow,workFlowManager,workFlowDetails,workFlowProgress,scheduledworkFlow,userManager,goToTask} = this.state;
     	return (
 			<div className="full-container">
 				<div className="card">
@@ -77,6 +81,10 @@ class TaskMaster extends Component {
 					
 					{userManager ? 
 						<UserManager />
+					:null}
+					
+					{goToTask ? 
+						<GoToTask />
 					:null}
 					
 				</div>           

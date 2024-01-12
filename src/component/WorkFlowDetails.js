@@ -14,6 +14,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateTimePicker, DatePicker, LocalizationProvider, DesktopDatePicker } from '@mui/x-date-pickers';
+import { copyImageToClipboard } from 'copy-image-clipboard'
 
 export default class WorkFlowDetails extends Component {
 	
@@ -57,8 +58,10 @@ export default class WorkFlowDetails extends Component {
 			workflowName:'',
 			workflowId:'',
 			catId:'',
+			taskGuid:'',
+			uniqueGuid:'',
 			daysCount:0,
-			status_change:false,
+			status_change:'false',
 		}
 		
 		this.csvLink = React.createRef();
@@ -336,9 +339,9 @@ export default class WorkFlowDetails extends Component {
 		this.setState({[event.target.name]:event.target.value});
 		
 		if($("input[name='status_change']").prop("checked") == true){
-			this.setState({status_change:true});
+			this.setState({status_change:'true'});
 		}else if($("input[name='status_change']").prop("checked") == false){
-			this.setState({status_change:false});
+			this.setState({status_change:'false'});
 		}
 		
 		if($("input[name='xDays']").prop("checked") == false){
@@ -418,6 +421,7 @@ export default class WorkFlowDetails extends Component {
 			this.setState({persons:[],responsiblePerson:[]});
 		}
 		
+		let taskName = data.name != null ? data.name : '';
 		let personName = data.person != null ? data.person : '';
 		let personId = data.person_id != null ? data.person_id : '';
 		let personEmail = data.person_email != null ? data.person_email : '';
@@ -431,6 +435,8 @@ export default class WorkFlowDetails extends Component {
 		let status_change = data.status_change;
 		let checklist = data.checklist ? data.checklist.split(',') : [];
 		let synchronize = data.synchronize;
+		let taskGuid = data.uid;
+		let uniqueGuid = data.unique_guid;
 		let detailsNote = data.details_note != null ? data.details_note : '';
 		//let wipNote = data.wip_note != null ? data.wip_note : '';
 		//let workflowOption = data.task_option;
@@ -440,7 +446,7 @@ export default class WorkFlowDetails extends Component {
 		//console.log('data',data);
 		let currentDate = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
 		let cFormUID = data.form_id;
-		this.setState({taskId,personRole,personName,personId,personEmail,startDate,dueDate:null,xDays,xDaysNumber,completedBefore,doNotShare,gotolink,sendMessage,synchronize,checklist,detailsNote,taskNote:'',taskWipNote:'',status_change});
+		this.setState({taskName,taskId,personRole,personName,personId,personEmail,startDate,dueDate:null,xDays,xDaysNumber,completedBefore,doNotShare,gotolink,sendMessage,synchronize,checklist,detailsNote,taskNote:'',taskWipNote:'',status_change,taskGuid,uniqueGuid});
 	}
 	
 	updateWorkflowTask=()=>{
@@ -594,6 +600,44 @@ export default class WorkFlowDetails extends Component {
 			})
 			this.setState({checklist:updateChecklist});
 		}
+	}
+	
+	getQrCode=()=>{
+		this.setState({copyQrCode:this.state.uniqueGuid});
+	}
+	
+	copyQrImage=(img)=>{
+		let path = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+img;
+		copyImageToClipboard(path).then(() => {
+		  console.log('Image Copied');
+		}).catch((e) => {
+		  console.log('Error: ', e.message);
+		})
+	}
+	
+	saveQrImage=(img,fileName)=>{
+		let url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+img;
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.responseType = "blob";
+		xhr.onload = function(){
+			var urlCreator = window.URL || window.webkitURL;
+			var imageUrl = urlCreator.createObjectURL(this.response);
+			var tag = document.createElement('a');
+			tag.href = imageUrl;
+			tag.download = fileName+'.png';
+			document.body.appendChild(tag);
+			tag.click();
+			document.body.removeChild(tag);
+		}
+		xhr.send();
+	}
+	
+	printQrImage=()=>{
+		let w = window.open();
+		let html = $("#qr-code-img").html();
+		$(w.document.body).html(html);
+		setTimeout(function(){w.print()}, 1000);
 	}
 	
 	render() {
@@ -913,11 +957,15 @@ export default class WorkFlowDetails extends Component {
 							</div> */}
 							
 							<div className="row-input list-sec">
-								<label className="label-control" onClick={()=>this.showCheckList(true)}><input name="demo" type="checkbox" value="Y" checked='checked' disabled/> Checklist</label>
+								<div><label className="label-control" onClick={()=>this.showCheckList(true)}><input name="demo" type="checkbox" value="Y" checked='checked' disabled/> Checklist</label>
+								<span className="change-status-com">
+								<button onClick={this.getQrCode} data-toggle="modal" data-target="#qrCodePopup" className="btn qr-code-btn" type="button"><i className="fa fa-qrcode" aria-hidden="true"></i></button> Generate QR code for this taks
+								</span>
+								</div>
 								<div className="add-checklist" style={{display:'none'}}>
-								    {this.state.checklist.length > 0 ?
+								    {/* this.state.checklist.length > 0 ?
 								    <div className="delete-checklist" onClick={() => {if (window.confirm('Are you sure you want to Delete this checklist?')) this.deleteCheckList()}} ><i className="fa fa-trash"></i></div>
-									:null}
+									:null */}
 									<div className="check-list">
 										{checklistHtml}
 									</div>
@@ -945,6 +993,29 @@ export default class WorkFlowDetails extends Component {
 						</div>
 					</div>
 				</nav>
+				<div className="modal" id={"qrCodePopup"} role="dialog">
+					<div className="modal-dialog modal-lg custom-modal qr-code-modal">
+						<div className="modal-content qr-code-modal">
+							<div className="modal-header">
+								<button type="button" className="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div className="modal-body text-center">
+								<div id="qr-code-img"><img src={"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='"+this.state.copyQrCode+"'"} alt="QR" width="150" height="150" />
+								</div>
+								<div className="qr-code-des">
+									
+									<div className="mr-3"><b>Workflow:</b> {this.state.workflowName}</div>
+									<div className="mr-3"><b>Task Name:</b> {this.state.taskName}</div>
+									<div className="qr-code-button">
+									<button onClick={()=>this.copyQrImage(this.state.copyQrCode)} className="btn copy-code-btn" type="button"><i className="fa fa-copy" aria-hidden="true"></i></button>
+									<button onClick={()=>this.saveQrImage(this.state.copyQrCode,this.state.taskName)} className="btn copy-code-btn" type="button"><i className="fa fa-download" aria-hidden="true"></i></button>
+									<button onClick={()=>this.printQrImage(this.state.copyQrCode,this.state.taskName)} className="btn copy-code-btn" type="button"><i className="fa fa-print" aria-hidden="true"></i></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>	
 		);
 	}

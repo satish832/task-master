@@ -223,6 +223,7 @@ export default class UserManager extends Component {
 						<option value='SuperAdmin'>Super Admin</option>
 						<option value='Admin'>Admin</option>
 						<option value='Subscriber'>Regular User</option>
+						<option value='General'>General User</option>
 					</select>
 					</td>
 					<td><input type="checkbox" checked={row.status == 1 || that.state[row.id] ? 'checked' : ''} name={'user_'+row.id} onClick={()=>that.userApprove(row.id)} /></td>
@@ -292,6 +293,7 @@ export default class UserManager extends Component {
 								<option value='SuperAdmin'>Super Admin</option>
 								<option value='Admin'>Admin</option>
 								<option value='Subscriber'>Regular User</option>
+								<option value='General'>General User</option>
 							</select>
 							<label className="label-control"> Password </label>
 							<input className="form-control" name="userPassword" type="password" onChange={this.getValue} />

@@ -16,6 +16,9 @@ select.form-control:not([size]):not([multiple]) {
     height: calc(2.25rem + 2px);
 }
 
+.width-50{width:50% !important; height: calc(1.5em + 0.5rem + 2px) !important;}
+.checklist-completing{text-decoration:line-through }
+
 .login-img {
 	min-height: 720px;
 	background-position: center;
@@ -48,7 +51,7 @@ select.form-control:not([size]):not([multiple]) {
 .input-group-append, .input-group-prepend {
     display: flex;
 }
-.build-details, .form-control {
+.build-details {
     font-size: 14px!important;
 }
 .append-btn{border-top-left-radius: 0px!important;border-bottom-left-radius: 0px!important;}
@@ -540,9 +543,7 @@ input:checked+.showAllSlide:before {
     height: 40px!important;
 }
 
-.build-details, .form-control {
-    font-size: 14px!important;
-}
+
 .btn-wip-note {
     margin-left: 2px;
 }
@@ -682,7 +683,7 @@ input:checked+.showAllSlide:before {
 
 .checklist-completed {text-decoration: line-through;font-size: 14px;}
 .custom-progress-bar{    width: 100%;margin-bottom: 10px;position: relative;}
-.custom-progress-bar progress{  width: 90%;margin-left: 35px;height: 20px;}
+.custom-progress-bar progress{  width: 90%;margin-left: 40px;height: 20px;}
 .custom-progress-bar span{position: absolute;top: 0px;}
 .list-header{margin-bottom: 20px; font-size: 16px;}
 .modal-header-costom{height: 15px;}
@@ -692,3 +693,27 @@ input:checked+.showAllSlide:before {
 .hide-row{display: none !important;}
 .delete-checklist-item{margin-left: 10px;}
 .change-status-com{margin-left: 20px;}
+#qr-code-img{margin-bottom: 10px;}
+.qr-code-btn{padding: 0 !important;}
+.qr-code-button{margin-top: 10px;}
+.qr-code-button button{font-size: 20px;padding: 2px 8px;}
+.goto-page{width: 50%; margin: auto;}
+.goto-page h6{text-align: center;margin-top: 20px;}
+.goto-page input{width: 55%; margin: auto;margin-top: 20px;}
+.goto-input{text-align: center;}
+.top-right-login{display:none}
+
+@media only screen and (max-width:767px){
+.login-img{display:none;} 
+.top-right-login{display:block;}
+.top-header{padding:15px !important;}
+.instance-version{ position:inherit; margin-bottom: 10px;}
+.top-header h4 { margin-bottom:0px; }
+.login-user-top	{ display:none !important;}
+.top-right-login .login-user-top{ margin:0px !important; display:block !important}
+.sign-out-btn{width:100% !important;}
+.user-top-outer{ margin-bottom:0px;}
+.go-to-task-modal .modal-dialog{ margin:0px !important;}
+.go-to-task-modal .modal-content{border: 0px solid rgba(0,0,0,.2); border-radius: 0;}
+.go-to-task-modal .form-check{padding-left:0px !important;}
+}
