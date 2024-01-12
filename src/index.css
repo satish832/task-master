@@ -715,4 +715,7 @@ input:checked+.showAllSlide:before {
 .go-to-task-modal .modal-dialog{ margin:0px !important;}
 .go-to-task-modal .modal-content{border: 0px solid rgba(0,0,0,.2); border-radius: 0; height: 100vh;}
 .go-to-task-modal .form-check{padding-left:0px !important;}
+.go-to-task-modal .modal-body {flex: none;}
+
+
 }
