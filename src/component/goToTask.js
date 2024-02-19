@@ -22,6 +22,7 @@ export default class goToTask extends Component {
 			taskDetails:[],
 			checklist:[],
 			listPercentage:0,
+			taskOption:'',
 		}
     }
 	
@@ -33,6 +34,10 @@ export default class goToTask extends Component {
 		let name = event.target.name;
 		let res = event.target.value;
 		this.setState({[event.target.name]:event.target.value});
+	}
+	
+	clearTaskGuid=() => {
+		$('#taskGuid').val('');
 	}
 	
 	getTaskData=() => {
@@ -65,11 +70,11 @@ export default class goToTask extends Component {
 					this.setState({checkedCount,listPercentage});
 				}
 				
-				this.setState({taskDetails:data[0], checklist:checklist});
+				this.setState({taskDetails:data[0], checklist:checklist, taskOption:data[0].task_option,wipNote:data[0].details_note});
 				
 				setTimeout(function(){
 					$('#editTask').modal('show');
-					$('#taskGuid').val('');
+					//$('#taskGuid').val('');
 				}, 1000);
 			})
 		}else{
@@ -78,10 +83,40 @@ export default class goToTask extends Component {
 	}
 	
 	saveTaskData=() => {
-		$('#taskGuid').val('');
+		let taskGuid= $('#taskGuid').val();
+		let taskOption = this.state.taskOption;
+		let wipNote = this.state.wipNote;
+		let checklist = this.state.checklist;
+		
+		let ApiUrl = $('#ApiUrl').val();
+		let url = ApiUrl+'save-task-data';
+		
+		let formData = new FormData();
+		formData.append('uniqueGuid', taskGuid);
+		formData.append('taskOption', taskOption);
+		formData.append('checklist', checklist);
+		formData.append('wipNote', wipNote);
+		axios({
+			method: 'POST',
+			url: url,
+			data: formData,
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		})
+		.then(response => {
+			$('#taskGuid').val('')
+			$('#editTask').modal('hide');
+			alert('The task updated successfully!');
+			//this.getTaskList();
+		}).catch(error => {
+			alert('error::'+ error);
+		})
 	}
 	
 	updateTaskOption=(event)=>{
+		
+		this.setState({taskOption:event.target.value});
 		/* let id = event.target.id;
 		let name = event.target.name;
 		let val = event.target.value;
@@ -198,7 +233,7 @@ export default class goToTask extends Component {
 
 	render() {
 
-		const {taskDetails,checkedCount,listPercentage,checklist} = this.state;
+		const {taskDetails,checkedCount,listPercentage,checklist,taskOption} = this.state;
 		//let checklist = taskDetails.checklist ? taskDetails.checklist.split(',') : [];
 		
 		/* let checkedCount = 0;
@@ -217,20 +252,23 @@ export default class goToTask extends Component {
 			listPercentage = checkedCount/checklist.length*100;
 		} */
 
-		//console.log('taskDetails->',taskDetails);
+		console.log('taskDetails->',taskDetails);
 		return (
 			<div class="container">
 			<div className="row justify-content-center mt-3">
 			<div class="col-md-12 text-center">
 				<h6>Go-to Task API</h6>
 			</div>
-				<div className="col-md-5">
+				<div className="col-md-6">
 					<div class="row">
-						<div class="col-md-9 ">
+						<div class="col-md-8 ">
 							<input type="text" name="goto" className="form-control" id="taskGuid" placeholder="Enter task ID to Go-to a Task"></input>
 						</div>
-						<div class="col-md-3 pl-lg-0 pl-md-0 mt-lg-0 mt-md-0 mt-3">
+						<div class="col-md-2 pl-lg-0 pl-md-0 mt-lg-0 mt-md-0 mt-2">
 						<button type="submit" className="btn btn-primary btn-block" onClick={this.getTaskData}>Submit</button>
+						</div>
+						<div class="col-md-2 pl-lg-0 pl-md-0 mt-lg-0 mt-md-0 mt-2">
+						<button type="submit" className="btn btn-danger btn-block" onClick={this.clearTaskGuid}>Clear</button>
 						</div>
 					</div>
 				</div>
@@ -253,9 +291,9 @@ export default class goToTask extends Component {
 								<th> Status</th>
 							</tr>
 							<tr>
-								<td> {moment(taskDetails.due_date).format('MM/DD/YYYY')}</td>
+								<td> {taskDetails.due_date ? moment(taskDetails.due_date).format('MM/DD/YYYY') : ''}</td>
 								<td>
-									<select id={taskDetails.id} className="form-control form-control-sm width-50" name="taskOption" onChange={this.updateTaskOption} value={taskDetails.task_option}>
+									<select id={taskDetails.id} className="form-control form-control-sm" name="taskOption" onChange={this.updateTaskOption} value={taskOption}>
 										<option value='Pending'>Pending</option>
 										<option value='To Do'>To Do</option>
 										<option value='In Progress'>In Progress</option>
@@ -306,7 +344,7 @@ export default class goToTask extends Component {
 								<h5>WIP Note</h5>
 								
 								<div className="form-group">
-									<textarea className="form-control" name="addWipNote" value={this.state.addWipNote} onChange={this.getValue}> </textarea>
+									<textarea className="form-control" name="wipNote" value={this.state.wipNote} onChange={this.getValue}> </textarea>
 								</div>
 								
 							</div>
@@ -317,7 +355,7 @@ export default class goToTask extends Component {
 					  <div className="modal-footer">
 							<div className="popup-btn-com">
 								<button type="button" className="btn btn-danger float-right" data-dismiss="modal">Close</button>
-								<button type="button" className="btn btn-info float-right mr-1" data-dismiss="modal" onClick={this.saveTaskData}>Save</button>
+								<button type="button" className="btn btn-info float-right mr-1" onClick={this.saveTaskData}>Save</button>
 							</div>
 					  </div>
 					</div>

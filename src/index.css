@@ -441,9 +441,7 @@ select.form-control:not([size]):not([multiple]) {
 .startenddate label {
     margin: 0;
 }
-.tracker-table.table td, .tracker-table.table th {
-    padding: 2px 8px !important;
-}
+
 .note-row {
     display: none;
     background-color: #ffeac4;
@@ -663,6 +661,11 @@ input:checked+.showAllSlide:before {
     clear: both;
     display: block;
 }
+.tracker-table.table td.note-row{padding: 0px !important; border: none;}
+.tracker-table.table td, .tracker-table.table th {
+    padding: 2px 8px !important;
+}
+
 
 .fa-trash{color: #f60404;cursor: pointer;}
 .checklist-add{margin-top: 10px;margin-bottom: 10px;}
@@ -702,6 +705,11 @@ input:checked+.showAllSlide:before {
 .goto-page input{width: 55%; margin: auto;margin-top: 20px;}
 .goto-input{text-align: center;}
 .top-right-login{display:none}
+.check-disable{vertical-align: middle;}
+.has-checklist{display:block !important;}
+.task-details-tb{margin-bottom: 0 !important;}
+.task-details-tb th{padding: 2px 10px !important;width: 25%;}
+.task-details-tb td{padding: 2px 10px !important;}
 
 @media only screen and (max-width:767px){ 
 .top-right-login{display:block;}

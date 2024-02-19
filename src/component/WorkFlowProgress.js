@@ -7,6 +7,7 @@ import arrayMove from "./arrayMove";
 import { CSVLink } from "react-csv";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { copyImageToClipboard } from 'copy-image-clipboard';
 import {
   sortableContainer,
   sortableElement,
@@ -36,6 +37,7 @@ export default class WorkFlowProgress extends Component {
 			branchs:[],
 			taskNote:'',
 			checklist:[],
+			taskDetails:[],
 			taskName:'',
 			taskWipNote:'',
 			startDate:'',
@@ -50,11 +52,13 @@ export default class WorkFlowProgress extends Component {
 			checklistWid:'',
 			checklistTaskId:'',
 			listPercentage:0,
+			copyQrCode:'',
+			uniqueQrCode:'',
 		}
 
     }
 	
-	componentDidMount() {
+	componentDidMount() { 
 		this.getWorkflow();
 		this.getTaskMasterUsers();
 	}
@@ -155,16 +159,20 @@ export default class WorkFlowProgress extends Component {
 		let days = 0;
 		let ApiUrl = $('#ApiUrl').val();
 		let url = ApiUrl+'update-option-v2';
-		let date = new Date();
+		let date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
 		let currentDate = moment(date).format('MM-DD-YYYY');
 		
-		let startDate = moment(ids[1]).format('YYYY-MM-DD');
+		let startDate = moment(ids[1]).format('MM/DD/YYYY');
 		
 		if(val == 'Complete'){
-			let start = new Date(startDate);
-			let diff  = new Date(date - start);
-			days  = Math.round(diff/1000/60/60/24);
+			let startDay = new Date(startDate);  
+			let endDay = new Date(date);
+			let millisBetween = startDay.getTime() - endDay.getTime();  
+			days = millisBetween / (1000 * 3600 * 24);
 		}
+		
+		let currentDate2 = moment(date).format('YYYY-MM-DD HH:MM');
+		
 
 		let formData = new FormData();
 		formData.append('Id', ids[0]);
@@ -172,6 +180,7 @@ export default class WorkFlowProgress extends Component {
 		formData.append('date', currentDate);
 		formData.append('days', days);
 		formData.append('user', localStorage.getItem('username'));
+		formData.append('updated_at', currentDate2);
 		axios({
 			method: 'POST',
 			url: url,
@@ -197,14 +206,16 @@ export default class WorkFlowProgress extends Component {
 		
 		let ApiUrl = $('#ApiUrl').val();
 		let url = ApiUrl+'update-person';
-		let date = new Date();
-		let currentDate = moment(date).format('MM/DD/YYYY HH:MM');
+		let date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+		let currentDate = moment(date).format('YYYY-MM-DD HH:MM');
 		let formData = new FormData();
 		formData.append('Id', id);
 		formData.append('person_id', name[1]);
 		formData.append('person', name[0]);
 		formData.append('person_email', name[2]);
 		formData.append('user', localStorage.getItem('username'));
+		formData.append('updated_at', currentDate);
+		
 		axios({
 			method: 'POST',
 			url: url,
@@ -236,7 +247,11 @@ export default class WorkFlowProgress extends Component {
 		this.setState({taskNote:note});
 	}
 	
-	taskChecklist=(id,task_name,job_id,wid,taskId,checklist,status_change,task_start_date)=>{
+	taskDetails=(data)=>{
+		this.setState({taskDetails:data});
+	}
+	
+	taskChecklist=(id,task_uid,task_name,job_id,wid,taskId,checklist,status_change,task_start_date)=>{
 		let checklists = checklist.split(',');
 		if(checklists.length > 0){
 			let checkedCount = 0;
@@ -252,20 +267,20 @@ export default class WorkFlowProgress extends Component {
 			
 			let listPercentage = checkedCount/checklists.length*100;
 			
-			this.setState({tId:id,taskName:task_name,checklist:checklists ? checklists : [],noteJobId:job_id,checklistWid:wid,checklistTaskId:taskId,checkedCount,listPercentage,status_change,task_start_date});
+			this.setState({tId:id,taskUid:task_uid,taskName:task_name,checklist:checklists ? checklists : [],noteJobId:job_id,checklistWid:wid,checklistTaskId:taskId,checkedCount,listPercentage,status_change,task_start_date});
 		}
 	}
 	
-	wipNote=(job_id,wid,task_id)=>{
-		this.getWipNote(job_id,wid,task_id);
+	wipNote=(job_id,task_uid,wid,task_id)=>{
+		this.getWipNote(task_uid);
 		//this.setState({taskWipNote:note});
-		this.setState({noteJobId:job_id,noteWId:wid,noteTaskId:task_id});
+		this.setState({noteJobId:job_id,taskUid:task_uid,noteWId:wid,noteTaskId:task_id});
 	}
 	
 	handleWipNote=()=>{
 		
-		/* let noteJobId = this.state.noteJobId;
-		let noteWId = this.state.noteWId;
+		let noteJobId = this.state.noteJobId;
+		let taskUid = this.state.taskUid;
 		let noteTaskId = this.state.noteTaskId;
 		let addWipNote = this.state.addWipNote;
 		
@@ -274,9 +289,7 @@ export default class WorkFlowProgress extends Component {
 		//let date = new Date();
 		//let currentDate = moment(date).format('MM/DD/YYYY HH:MM');
 		let formData = new FormData();
-		formData.append('job_id', noteJobId);
-		formData.append('wid', noteWId);
-		formData.append('task_id', noteTaskId);
+		formData.append('task_uid', taskUid);
 		formData.append('note', addWipNote);
 		//formData.append('date', currentDate);
 		axios({
@@ -289,11 +302,11 @@ export default class WorkFlowProgress extends Component {
 		})
 		.then(response => {
 			//this.getWorkflow();
-			this.getWipNote(noteJobId,noteWId,noteTaskId);
+			this.getWipNote(taskUid);
 			this.setState({addWipNote:''});
 		}).catch(error => {
 			alert('error::'+ error);
-		})	 */
+		})
 	}
 	
 	handleWipNoteByRow=(job_id,wid,task_id,row_id) => {
@@ -357,15 +370,15 @@ export default class WorkFlowProgress extends Component {
 		})
     }
 	
-	getWipNote=(job_id,wid,task_id) => {
+	getWipNote=(task_uid) => {
 		
 		let ApiUrl = $('#ApiUrl').val();
 		let url = ApiUrl+'task-note';
 		let data = [];
 		let formData = new FormData();
-		formData.append('job_id', job_id);
-		formData.append('wid', wid);
-		formData.append('task_id', task_id);
+		formData.append('task_uid', task_uid);
+		//formData.append('wid', wid);
+		//formData.append('task_id', task_id);
 		axios({
 			method: 'POST',
 			url: url,
@@ -476,17 +489,17 @@ export default class WorkFlowProgress extends Component {
 	}
 	
 	saveChecklistOption =()=> {
-		let taskId = this.state.checklistTaskId;
 		let tId = this.state.tId;
 		let task_start_date = this.state.task_start_date;
-		let workflowId = this.state.checklistWid;
 		let checklist = this.state.checklist.join();
 		let ApiUrl = $('#ApiUrl').val();
 		let url = ApiUrl+'update-workflow-task-checklist';
+		let date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+		let currentDate = moment(date).format('YYYY-MM-DD HH:MM');
 		let formData = new FormData();
-		formData.append('taskId', taskId);
-		formData.append('workflowId', workflowId);
+		formData.append('tId', tId);
 		formData.append('checklist', checklist);
+		formData.append('updated_at', currentDate);
 		axios({
 			method: 'POST',
 			url: url,
@@ -519,17 +532,21 @@ export default class WorkFlowProgress extends Component {
 		let startDate = moment(task_start_date).format('YYYY-MM-DD');
 		
 		if(val == 'Complete'){
-			let start = new Date(startDate);
-			let diff  = new Date(date - start);
-			days  = Math.round(diff/1000/60/60/24);
+			let startDay = new Date(startDate);  
+			let endDay = new Date(date);
+			let millisBetween = startDay.getTime() - endDay.getTime();  
+			days = millisBetween / (1000 * 3600 * 24);
 		}
-
+		let currentDate2 = moment(date).format('YYYY-MM-DD HH:MM');
+		
+		
 		let formData = new FormData();
 		formData.append('Id', tId);
 		formData.append('option', val);
 		formData.append('date', currentDate);
 		formData.append('days', days);
 		formData.append('user', localStorage.getItem('username'));
+		formData.append('updated_at', currentDate2);
 		axios({
 			method: 'POST',
 			url: url,
@@ -605,6 +622,7 @@ export default class WorkFlowProgress extends Component {
 	handleChecklistNote=(note)=>{
 		
 		let jobId = this.state.noteJobId;
+		let taskUid = this.state.taskUid;
 		let wId = this.state.checklistWid;
 		let taskId = this.state.checklistTaskId;
 		//let note = name+' - Completed by '+localStorage.getItem('username');
@@ -614,9 +632,7 @@ export default class WorkFlowProgress extends Component {
 		//let date = new Date();
 		//let currentDate = moment(date).format('MM/DD/YYYY HH:MM');
 		let formData = new FormData();
-		formData.append('job_id', jobId);
-		formData.append('wid', wId);
-		formData.append('task_id', taskId);
+		formData.append('task_uid', taskUid);
 		formData.append('note', note);
 		//formData.append('date', currentDate);
 		axios({
@@ -628,15 +644,55 @@ export default class WorkFlowProgress extends Component {
 			}
 		})
 		.then(response => {
-			this.getWipNote(jobId,wId,taskId);
+			this.getWipNote(taskUid);
 		}).catch(error => {
 			alert('error::'+ error);
 		})
 	}
 	
+	getQrCode=(task_uid,wname,tname)=>{
+		console.log('task_uid->',task_uid);
+		let qrCode = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+task_uid;
+		this.setState({uniqueQrCode:qrCode,copyQrCode:task_uid,workflowName:wname,taskName:tname});
+	}
+	
+	copyQrImage=(img)=>{
+		let path = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+img;
+		copyImageToClipboard(path).then(() => {
+		  console.log('Image Copied');
+		}).catch((e) => {
+		  console.log('Error: ', e.message);
+		})
+	}
+	
+	saveQrImage=(img,fileName)=>{
+		let url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+img;
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.responseType = "blob";
+		xhr.onload = function(){
+			var urlCreator = window.URL || window.webkitURL;
+			var imageUrl = urlCreator.createObjectURL(this.response);
+			var tag = document.createElement('a');
+			tag.href = imageUrl;
+			tag.download = fileName+'.png';
+			document.body.appendChild(tag);
+			tag.click();
+			document.body.removeChild(tag);
+		}
+		xhr.send();
+	}
+	
+	printQrImage=()=>{
+		let w = window.open();
+		let html = $("#qr-code-img").html();
+		$(w.document.body).html(html);
+		setTimeout(function(){w.print()}, 1000);
+	}
+	
 	render() {
-		const {workflowFirstTask,workflows,wCategories,filterWorkflow,filterCategory,filterRole,filterPerson,filterStatus,filterBranch,filterType,filterCompany,filterPatient,responsibleRole,responsiblePerson,branchs,types,wInsurance,wPatients,viewWorkflowDetails,workflowListTable,workflowJob,workflowJobTasks,superViewIcon,superViewShow,workflowSuperJobs,rolePerson,updateChecklist,checklist} = this.state;
-		console.log('workflowFirstTask->',workflowFirstTask);
+		const {workflowFirstTask,workflows,wCategories,filterWorkflow,filterCategory,filterRole,filterPerson,filterStatus,filterBranch,filterType,filterCompany,filterPatient,responsibleRole,responsiblePerson,branchs,types,wInsurance,wPatients,viewWorkflowDetails,workflowListTable,workflowJob,workflowJobTasks,superViewIcon,superViewShow,workflowSuperJobs,rolePerson,updateChecklist,checklist,taskDetails} = this.state;
+		console.log('taskDetails->',taskDetails);
 		let rowHtml = '';
 		let rowHtml2 = '';
 		let rowHtml3 = '';
@@ -748,7 +804,19 @@ export default class WorkFlowProgress extends Component {
 						checklistChecked = checkedCount+'/'+checklist.length;
 					}
 					
-					that.handleWipNoteByRow(row.task.job_id,row.task.wid,row.task.task_id,row.id);
+					let notes = row.task.notes;
+					
+					let noteHtml = '';
+					if(notes){
+						noteHtml = notes.map(function(val,i) {
+							return (
+								<div className="note-row-div" id={"note_"+row.id}>{val}</div>
+							);
+							
+						})
+					}
+					
+					//that.handleWipNoteByRow(row.task.job_id,row.task.wid,row.task.task_id,row.id);
 					superViewId = row.workflow_id;
 					return (<tbody><tr>
 						<td>{row.task.name}</td>
@@ -776,25 +844,29 @@ export default class WorkFlowProgress extends Component {
 							</select>
 							</span>
 						</td>
+						<td>{moment(row.task.updated_at).format('MM/DD/YYYY')}</td>
 						<td>{row.task.x_days_number}</td>
 						<td className={className}>{row.task.days_spent}</td>
 						<td><span className="task-icon"><img src={href+'/'+icon+'.png'} alt="Status" width="15" height="15" /></span></td>
 						
-						<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup" onClick={() => { that.taskChecklist(row.task.id,row.task.name,row.task.job_id,row.task.wid,row.task.task_id,row.task.checklist,row.task.status_change,row.task.task_start_date) } }>{checklistChecked}</span></td>
-						
+						<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup" onClick={() => { that.taskChecklist(row.task.id,row.task.task_uid,row.task.name,row.task.job_id,row.task.wid,row.task.task_id,row.task.checklist,row.task.status_change,row.task.task_start_date) } }>{checklistChecked}</span></td>
+						<td>
+						<span className="task-icon task-info" data-toggle="modal" data-target="#taskDetails" onClick={() => { that.taskDetails(row) } }><i className="fa fa-info-circle"></i></span>
+						</td>
 						<td>
 						<span className="task-icon task-note" data-toggle="modal" data-target="#taskNote" onClick={() => { that.detailsNote(row.task.details_note) } }><i className="fa fa-eye"></i></span>
 						</td>
-						<td><span className="task-icon task-note" data-toggle="modal" data-target="#taskWipNote" onClick={() => { that.wipNote(row.task.job_id,row.task.wid,row.task.task_id) } }><img src={href+'/note.png'} alt="Status" width="15" height="15" /></span></td>
+						<td><button onClick={() => { that.getQrCode(row.task.task_uid,row.name,row.task.name) } } data-toggle="modal" data-target="#qrCodePopup" className="btn qr-code-btn" type="button"><i className="fa fa-qrcode" aria-hidden="true"></i></button></td>
+						<td><span className="task-icon task-note" data-toggle="modal" data-target="#taskWipNote" onClick={() => { that.wipNote(row.task.job_id,row.task.task_uid,row.task.wid,row.task.task_id) } }><img src={href+'/note.png'} alt="Status" width="15" height="15" /></span></td>
 						<td><a href={row.task.gotolink ? row.task.gotolink : 'javascript:void(0)'} target="_blank"><span className="task-icon"><img src={href+'/gotolink.png'} alt="Status" width="15" height="15" /></span></a></td>
 						<td><a href={row.link_url ? row.link_url : 'javascript:void(0)'} target="_blank"><span className="task-icon"><img src={href+'/sync.png'} alt="Status" width="15" height="15" /></span></a></td>
 						<td>{row.username}</td>
 						<td>{row.type}</td>
 						<td>{row.branch_id}</td>
-						<td>{row.patient_name}</td>
+						<td>{row.patient_first_name}</td>
 						<td><span id={"view_"+row.id} className="view-workflow-details" onClick={() => { that.workflowDetails(row.id,row.workflow_days_spent) } }><img src={href+'/view-details.png'} alt="View Details" width="15" height="15" /></span></td>
 						</tr>
-						<tr><td id={"note_row"+row.id} className="note-row" colspan="20"><div className="note-row-div" id={"note_"+row.id}></div></td></tr>
+						<tr><td id={"note_row"+row.id} className="note-row" colspan="20">{noteHtml}</td></tr>
 						
 					</tbody>);
 				}
@@ -803,7 +875,7 @@ export default class WorkFlowProgress extends Component {
         }
 		
 		if(workflowJobTasks){
-			let patient_name = workflowJobTasks.patient_name;
+			let patient_first_name = workflowJobTasks.patient_first_name;
 			assignedDays = 0;
 			rowHtml2 = workflowJobTasks.map(function(row,i) {
 				//console.log('row',row);
@@ -818,7 +890,7 @@ export default class WorkFlowProgress extends Component {
 				}else if(row.status == 'Pending'){
 					icon = 'pending';
 				}
-				that.handleViewWipNoteByRow(row.job_id,row.wid,row.task_id,row.id);
+				//that.handleViewWipNoteByRow(row.job_id,row.wid,row.task_id,row.id);
 				assignedDays += parseInt(row.x_days_number);
 				
 				
@@ -849,6 +921,18 @@ export default class WorkFlowProgress extends Component {
 					checklistChecked = checkedCount+'/'+checklist.length;
 				}
 				
+				let notes = row.notes;
+					
+				let noteHtml = '';
+				if(notes){
+					noteHtml = notes.map(function(val,i) {
+						return (
+							<div className="note-row-div" id={"new_note_"+row.id}>{val}</div>
+						);
+						
+					})
+				}
+				
 				return (<tbody>
 					<tr>
 					<td><span className="task-icon"><img src={href+'/'+icon+'.png'} alt="Status" width="15" height="15" /></span></td>
@@ -861,13 +945,13 @@ export default class WorkFlowProgress extends Component {
 					<span className="task-icon task-note" data-toggle="modal" data-target="#taskNote" onClick={() => { that.detailsNote(row.details_note) } }><i className="fa fa-eye"></i></span>
 					</td>
 					
-					<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup2" onClick={() => { that.taskChecklist(row.id,row.task_name,row.job_id,row.wid,row.task_id,row.checklist,row.status_change,row.task_start_date) } }>{checklistChecked}</span></td>
-					
-					<td><span className="task-icon task-note" data-toggle="modal" data-target="#taskWipNote" onClick={() => { that.wipNote(row.job_id,row.wid,row.task_id) } }><img src={href+'/note.png'} alt="Status" width="15" height="15" /></span></td>
+					<td><span className="task-icon task-note" data-toggle="modal" data-target="#checkListPopup2" onClick={() => { that.taskChecklist(row.id,row.task_uid,row.task_name,row.job_id,row.wid,row.task_id,row.checklist,row.status_change,row.task_start_date) } }>{checklistChecked}</span></td>
+					<td><button onClick={() => { that.getQrCode(row.task_uid,row.workflow_name,row.task_name) } } data-toggle="modal" data-target="#qrCodePopup2" className="btn qr-code-btn" type="button"><i className="fa fa-qrcode" aria-hidden="true"></i></button></td>
+					<td><span className="task-icon task-note" data-toggle="modal" data-target="#taskWipNote" onClick={() => { that.wipNote(row.job_id,row.task_uid,row.wid,row.task_id) } }><img src={href+'/note.png'} alt="Status" width="15" height="15" /></span></td>
 					<td><a href={row.gotolink ? row.gotolink : 'javascript:void(0)'} target="_blank"><span className="task-icon"><img src={href+'/gotolink.png'} alt="Status" width="15" height="15" /></span></a></td>
 					
 					</tr>
-					<tr><td id={"note_row"+row.id} className="note-row" colspan="20"><div className="note-row-div" id={"new_note_"+row.id}></div></td></tr>
+					<tr><td id={"note_row"+row.id} className="note-row" colspan="20">{noteHtml}</td></tr>
 				</tbody>);
 				}
 			})
@@ -964,7 +1048,7 @@ export default class WorkFlowProgress extends Component {
 					}
 					
 					return (<tr>
-						<td>{row.patient_name}</td>
+						<td>{row.patient_first_name}</td>
 						<td>{row.insurance_company}</td>
 						<td>{row.Branch}</td>
 						<td>{row.Type}</td>
@@ -1139,11 +1223,14 @@ export default class WorkFlowProgress extends Component {
 							<th>Responsible Person</th>
 							<th>Due Date</th>
 							<th>Status</th>
+							<th>Last Activity</th>
 							<th>Assigned Days</th>
 							<th>Actual days</th>
 							<th>Status Icon</th>
 							<th>Checklist</th>
-							<th>Details Icon</th>
+							<th>Details</th>
+							<th>Note</th>
+							<th>QR Code</th>
 							<th>Note Icon</th>
 							<th>Go-to Icon</th>
 							<th>Link</th>
@@ -1156,6 +1243,41 @@ export default class WorkFlowProgress extends Component {
 						</thead>
 						{rowHtml}
 						</table>
+						
+						<div className="modal" id={"taskDetails"} role="dialog">
+							<div className="modal-dialog modal-lg custom-modal mds-description-modal">
+								<div className="modal-content">
+								  <div className="modal-header">
+									<h5 className="modal-title">Workflow Initiate Details</h5>
+									<button type="button" className="close" data-dismiss="modal">&times;</button>
+								  </div>
+								  <div className="modal-body">
+								  {taskDetails ?
+								  <table className="table table-bordered task-details-tb">
+									  <tr><th>Workflow_ID</th><td>{taskDetails.workflow_id}</td> </tr>
+									  <tr><th>Facility_ID</th><td>{taskDetails.facility_id}</td></tr>
+									  <tr><th>Patient_Branch_ID</th><td>{taskDetails.patient_branch_id}</td></tr>
+									  <tr><th>Branch_Id</th><td>{taskDetails.branch_id}</td></tr>
+									  <tr><th>User_Id</th><td>{taskDetails.user_id}</td> </tr>
+									  <tr><th>Username</th><td>{taskDetails.username}</td> </tr>
+									  <tr><th>TreatingPractitioner_ID</th><td>{taskDetails.treating_practitioner_id}</td> </tr>
+									  <tr><th>Patient_ID</th><td>{taskDetails.patient_id}</td> </tr>
+									  <tr><th>Patient_FirstName</th><td>{taskDetails.patient_first_name}</td> </tr>
+									  <tr><th>Patient_LastName</th><td>{taskDetails.patient_last_name}</td> </tr>
+									  <tr><th>Wip_ID</th><td>{taskDetails.wip_id}</td> </tr>
+									  <tr><th>Type</th><td>{taskDetails.type}</td> </tr>
+									  <tr><th>Insurance_company</th><td>{taskDetails.insurance_company}</td> </tr>
+									  <tr><th>Rx_ID</th><td>{taskDetails.rx_id}</td> </tr>
+									  <tr><th>Claim_ID</th><td>{taskDetails.claim_id}</td> </tr>
+									  <tr><th>Visit_ID</th><td>{taskDetails.visit_id}</td> </tr>
+									  <tr><th>InitiatingForm_ID</th><td>{taskDetails.initiating_form_id}</td> </tr>
+									  <tr><th>Link_Url</th><td>{taskDetails.link_url}</td> </tr>
+								  </table>
+								  :null}
+								  </div>
+								</div>
+							</div>
+						</div>
 						
 						<div className="modal" id={"taskNote"} role="dialog">
 							<div className="modal-dialog modal-lg custom-modal mds-description-modal">
@@ -1237,6 +1359,30 @@ export default class WorkFlowProgress extends Component {
 								</div>
 							</div>
 						</div>
+						
+						<div className="modal" id={"qrCodePopup"} role="dialog">
+							<div className="modal-dialog modal-lg custom-modal qr-code-modal">
+								<div className="modal-content qr-code-modal">
+									<div className="modal-header">
+										<button type="button" className="close" data-dismiss="modal">&times;</button>
+									</div>
+									<div className="modal-body text-center">
+										<div id="qr-code-img"><img src={this.state.uniqueQrCode} alt="QR" width="150" height="150" />
+										</div>
+										<div className="qr-code-des">
+											
+											<div className="mr-3"><b>Workflow:</b> {this.state.workflowName}</div>
+											<div className="mr-3"><b>Task Name:</b> {this.state.taskName}</div>
+											<div className="qr-code-button">
+											<button onClick={()=>this.copyQrImage(this.state.copyQrCode)} className="btn copy-code-btn" type="button"><i className="fa fa-copy" aria-hidden="true"></i></button>
+											<button onClick={()=>this.saveQrImage(this.state.copyQrCode,this.state.taskName)} className="btn copy-code-btn" type="button"><i className="fa fa-download" aria-hidden="true"></i></button>
+											<button onClick={()=>this.printQrImage(this.state.copyQrCode,this.state.taskName)} className="btn copy-code-btn" type="button"><i className="fa fa-print" aria-hidden="true"></i></button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 									
 					</div>
 				</div>
@@ -1266,7 +1412,7 @@ export default class WorkFlowProgress extends Component {
 							</div>
 						</div>
 						<div className="job-header-section">
-							<span><b>Patient Name:</b> {workflowJob.patient_name}</span>
+							<span><b>Patient Name:</b> {workflowJob.patient_first_name}</span>
 							<span><b>Patient ID:</b> {workflowJob.patient_id}</span>
 							<span><b>Branch:</b> {workflowJob.branch_id}</span>
 							<span><b>Insurance Company:</b> {workflowJob.insurance_company}</span>
@@ -1283,6 +1429,7 @@ export default class WorkFlowProgress extends Component {
 							<th>Actual days</th>
 							<th>View</th>
 							<th>Checklist</th>
+							<th>QR Code</th>
 							<th></th>
 							<th></th>
 						</tr>
@@ -1368,7 +1515,30 @@ export default class WorkFlowProgress extends Component {
 								  </div>
 								</div>
 							</div>
-						</div>						
+						</div>
+							
+						<div className="modal" id={"qrCodePopup2"} role="dialog">
+							<div className="modal-dialog modal-lg custom-modal qr-code-modal">
+								<div className="modal-content qr-code-modal">
+									<div className="modal-header">
+										<button type="button" className="close" data-dismiss="modal">&times;</button>
+									</div>
+									<div className="modal-body text-center">
+									<div id="qr-code-img"><img src={this.state.uniqueQrCode} alt="QR" width="150" height="150" /></div>
+										<div className="qr-code-des">
+											
+											<div className="mr-3"><b>Workflow:</b> {this.state.workflowName}</div>
+											<div className="mr-3"><b>Task Name:</b> {this.state.taskName}</div>
+											<div className="qr-code-button">
+											<button onClick={()=>this.copyQrImage(this.state.copyQrCode)} className="btn copy-code-btn" type="button"><i className="fa fa-copy" aria-hidden="true"></i></button>
+											<button onClick={()=>this.saveQrImage(this.state.copyQrCode,this.state.taskName)} className="btn copy-code-btn" type="button"><i className="fa fa-download" aria-hidden="true"></i></button>
+											<button onClick={()=>this.printQrImage(this.state.copyQrCode,this.state.taskName)} className="btn copy-code-btn" type="button"><i className="fa fa-print" aria-hidden="true"></i></button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			);

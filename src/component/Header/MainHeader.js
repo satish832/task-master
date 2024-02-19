@@ -24,7 +24,7 @@ class MainHeader extends Component {
             <div className="row">
 				<div className="col-md-6 col-6">
                     <h4>Task Master</h4>
-					<div className="instance-version">{'V1.01122024.a'}</div>
+					<div className="instance-version">{'V1.02162024.a'}</div>
                 </div>
 				<div className="col-md-6 col-6 text-right top-right-login">
                    <div className="login-user-top">{'Logged in as: '+localStorage.getItem('username')}</div>

@@ -14,7 +14,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateTimePicker, DatePicker, LocalizationProvider, DesktopDatePicker } from '@mui/x-date-pickers';
-import { copyImageToClipboard } from 'copy-image-clipboard'
+import { copyImageToClipboard } from 'copy-image-clipboard';
 
 export default class WorkFlowDetails extends Component {
 	
@@ -59,6 +59,7 @@ export default class WorkFlowDetails extends Component {
 			workflowId:'',
 			catId:'',
 			taskGuid:'',
+			uniqueQrCode:'',
 			uniqueGuid:'',
 			daysCount:0,
 			status_change:'false',
@@ -402,6 +403,7 @@ export default class WorkFlowDetails extends Component {
 		$(".fadeInRight").addClass('is-open');
 		$(".fadeInRight").removeClass('is-closed');
 		let taskId = data.id;
+		$('.add-checklist').hide();
 		
 		let personRole = data.role != null ? data.role : '';
 		//console.log('data->',data);
@@ -603,7 +605,8 @@ export default class WorkFlowDetails extends Component {
 	}
 	
 	getQrCode=()=>{
-		this.setState({copyQrCode:this.state.uniqueGuid});
+		let qrCode = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+this.state.uniqueGuid;
+		this.setState({uniqueQrCode:qrCode,copyQrCode:this.state.uniqueGuid});
 	}
 	
 	copyQrImage=(img)=>{
@@ -804,6 +807,9 @@ export default class WorkFlowDetails extends Component {
 											{value.send_message == 'Y' ?
 												<span className="task-icon"><img src={href+'/send-message.png'} alt="Send Message" width="15" height="15" /></span>
 											:null}
+											{value.checklist != '' ?
+												<span className="task-icon"><input className="check-disable" name="demo" type="checkbox" value="" checked='checked' disabled/></span>
+											:null}
 											
 											{value.synchronize == 'Y' ?
 												<span className="task-icon"><img src={href+'/sync.png'} alt="Synchronize" width="15" height="15" /></span>
@@ -962,7 +968,7 @@ export default class WorkFlowDetails extends Component {
 								<button onClick={this.getQrCode} data-toggle="modal" data-target="#qrCodePopup" className="btn qr-code-btn" type="button"><i className="fa fa-qrcode" aria-hidden="true"></i></button> Generate QR code for this taks
 								</span>
 								</div>
-								<div className="add-checklist" style={{display:'none'}}>
+								<div className={checklist.length > 0 ? 'has-checklist add-checklist' : "add-checklist"} style={{display:'none'}}>
 								    {/* this.state.checklist.length > 0 ?
 								    <div className="delete-checklist" onClick={() => {if (window.confirm('Are you sure you want to Delete this checklist?')) this.deleteCheckList()}} ><i className="fa fa-trash"></i></div>
 									:null */}
@@ -1000,7 +1006,9 @@ export default class WorkFlowDetails extends Component {
 								<button type="button" className="close" data-dismiss="modal">&times;</button>
 							</div>
 							<div className="modal-body text-center">
-								<div id="qr-code-img"><img src={"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='"+this.state.copyQrCode+"'"} alt="QR" width="150" height="150" />
+								<div id="qr-code-img">
+								{/* <img src={"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='"+this.state.copyQrCode+"'"} alt="QR" width="150" height="150" /> */}
+								<img src={this.state.uniqueQrCode} alt="QR" width="150" height="150" />
 								</div>
 								<div className="qr-code-des">
 									
